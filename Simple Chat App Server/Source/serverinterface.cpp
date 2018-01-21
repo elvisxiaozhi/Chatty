@@ -8,6 +8,7 @@ ServerInterface::ServerInterface(QWidget *parent)
 {
     setBasicLayout();
     connect(serverConnection.tcpServer, &QTcpServer::newConnection, this, &ServerInterface::newClientConnected);
+    connect(sendBtn, &QPushButton::clicked, this, &ServerInterface::clearSocketDescriptor);
     connect(sendBtn, &QPushButton::clicked, this, &ServerInterface::sendMessages);
     connect(this, &ServerInterface::messagesRead, this, &ServerInterface::sendMessages);
 }
@@ -61,6 +62,7 @@ void ServerInterface::setBasicLayout()
 void ServerInterface::newClientConnected()
 {
     QTcpSocket *newClient = serverConnection.tcpServer->nextPendingConnection();
+    qDebug() << newClient->socketDescriptor();
     connectedClients.push_back(newClient);
     connect(newClient, &QTcpSocket::disconnected, this, &ServerInterface::clientDisconnected);
     connect(newClient, &QTcpSocket::readyRead, this, &ServerInterface::readMessages);
@@ -79,6 +81,8 @@ void ServerInterface::clientDisconnected()
 void ServerInterface::readMessages()
 {
     QTcpSocket *socket = static_cast<QTcpSocket*>(sender());
+    previousSocketDescriptor = socket->socketDescriptor();
+    qDebug() << previousSocketDescriptor;
     QString messagesFromClients = socket->readAll();
     qDebug() << "Got message from Client: " << messagesFromClients;
     QStringList usernameAndMessages = messagesFromClients.split(" %1");
@@ -92,7 +96,15 @@ void ServerInterface::sendMessages() {
     QDataStream out(&messagesToClients, QIODevice::WriteOnly);
     QString currentTime = QTime::currentTime().toString("h:mm:ss AP");
     out << inputBox->toPlainText() + "currentTime:" + currentTime;
-    for(auto &client : connectedClients) {
-        client->write(messagesToClients);
+
+    foreach (QTcpSocket *client, connectedClients) {
+        if(client->socketDescriptor() != previousSocketDescriptor) {
+            client->write(messagesToClients);
+        }
     }
+}
+
+void ServerInterface::clearSocketDescriptor()
+{
+    previousSocketDescriptor = 0;
 }

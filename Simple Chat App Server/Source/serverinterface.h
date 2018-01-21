@@ -26,6 +26,8 @@ private:
     Connection serverConnection;
     void setBasicLayout();
 
+    int previousSocketDescriptor;
+
 signals:
     void messagesRead();
 
@@ -34,6 +36,8 @@ private slots:
     void clientDisconnected();
     void readMessages();
     void sendMessages();
+
+    void clearSocketDescriptor();
 };
 
 #endif // SERVERINTERFACE_H
