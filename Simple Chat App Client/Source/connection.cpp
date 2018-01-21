@@ -5,7 +5,7 @@
 Connection::Connection(QObject *parent) : QObject(parent)
 {
     tcpSocket = new QTcpSocket(this);
-    connect(this, &Connection::showError, this, &Connection::getError);
+    connect(tcpSocket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error), this, &Connection::getError);
 }
 
 void Connection::connectToServer()
@@ -18,7 +18,6 @@ void Connection::connectToServer()
         qDebug() << "Connected to server";
     }
     else {
-        emit showError(tcpSocket->error());
         qDebug() << "Failed to connect to server.";
     }
 }

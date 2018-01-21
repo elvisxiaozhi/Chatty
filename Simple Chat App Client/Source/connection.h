@@ -16,7 +16,6 @@ public:
 signals:
     void connectionSucceeded();
     void unconnectedState();
-    void showError(QAbstractSocket::SocketError);
 
 public slots:
     void connectToServer();
