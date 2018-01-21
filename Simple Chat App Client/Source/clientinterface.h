@@ -40,7 +40,6 @@ private slots:
     void sendMessages();
     void changeUserName();
     void showUnconnectedMsgBox();
-    void displayError(QAbstractSocket::SocketError);
 };
 
 #endif // CLIENTINTERFACE_H

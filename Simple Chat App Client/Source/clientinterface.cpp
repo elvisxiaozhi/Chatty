@@ -70,12 +70,6 @@ void ClientInterface::showUnconnectedMsgBox()
     }
 }
 
-void ClientInterface::displayError(QAbstractSocket::SocketError)
-{
-    qDebug() << clientConnection->tcpSocket->error();
-    qDebug() << clientConnection->tcpSocket->errorString();
-}
-
 void ClientInterface::setInterface()
 {
     clientInterface = new QWidget(this);

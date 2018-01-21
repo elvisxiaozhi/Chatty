@@ -16,11 +16,12 @@ public:
 signals:
     void connectionSucceeded();
     void unconnectedState();
+    void showError(QAbstractSocket::SocketError);
 
 public slots:
     void connectToServer();
     void sendMessages(QString);
-        void showError(QAbstractSocket::SocketError);
+    void getError(QAbstractSocket::SocketError);
 };
 
 #endif // CONNECTION_H
