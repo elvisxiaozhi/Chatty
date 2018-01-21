@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QLabel>
+#include <QPlainTextEdit>
 #include <QTextEdit>
 #include <QPushButton>
 #include <QListWidgetItem>
@@ -19,7 +20,7 @@ public:
 
 private:
     QWidget *clientInterface;
-    QLabel *messageBox;
+    QPlainTextEdit *messageBox;
     QTextEdit *inputBox;
     QPushButton *sendBtn;
     QListWidget *userNames;

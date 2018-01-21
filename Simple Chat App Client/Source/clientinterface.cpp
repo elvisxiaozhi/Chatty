@@ -27,12 +27,6 @@ ClientInterface::ClientInterface(QWidget *parent)
     connect(connectionThread, &QThread::finished, connectionThread, &QThread::deleteLater);
     connect(connectionThread, &QThread::finished, clientConnection, &QObject::deleteLater);
     connectionThread->start();
-
-//    QObject::connect(clientConnection->tcpSocket, static_cast<void (QSslSocket::*)(QAbstractSocket::SocketError)>(&QAbstractSocket::error), [clientConnection->tcpSocket] (QAbstractSocket::SocketError) {
-//          qDebug()<< "ERROR " << clientConnection->tcpSocket->errorString();
-//          clientConnection->tcpSocket->deleteLater();
-//      });
-    QObject::connect(clientConnection->tcpSocket, static_cast<void (QSslSocket::*)(QAbstractSocket::SocketError)>(&QAbstractSocket::error), this, &ClientInterface::displayError);
 }
 
 ClientInterface::~ClientInterface()
@@ -87,10 +81,8 @@ void ClientInterface::setInterface()
     clientInterface = new QWidget(this);
     setCentralWidget(clientInterface);
 
-    messageBox = new QLabel(clientInterface);
-    messageBox->setText("No Messages Yet");
+    messageBox = new QPlainTextEdit(clientInterface);
     messageBox->setMinimumSize(700, 400);
-    messageBox->setAlignment(Qt::AlignCenter);
     messageBox->setStyleSheet("border: 1px solid black");
 
     localHostName = QHostInfo::localHostName() + " %1";
@@ -141,6 +133,5 @@ void ClientInterface::readMessages()
     QDataStream readData(clientConnection->tcpSocket);
     QString recievedMessages;
     readData >> recievedMessages;
-    messageBox->setText(recievedMessages);
-    messageBox->setAlignment(Qt::AlignLeft);
+    messageBox->appendPlainText(recievedMessages);
 }
