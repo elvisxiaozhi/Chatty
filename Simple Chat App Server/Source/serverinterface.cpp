@@ -90,8 +90,8 @@ void ServerInterface::readMessages()
 void ServerInterface::sendMessages() {
     QByteArray messagesToClients;
     QDataStream out(&messagesToClients, QIODevice::WriteOnly);
-    QString currentTime = QTime::currentTime().toString("h:m:s ap");
-    out << inputBox->toPlainText() + currentTime;
+    QString currentTime = QTime::currentTime().toString("h:mm:ss AP");
+    out << inputBox->toPlainText() + "currentTime:" + currentTime;
     for(auto &client : connectedClients) {
         client->write(messagesToClients);
     }

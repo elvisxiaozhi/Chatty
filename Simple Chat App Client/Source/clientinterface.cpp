@@ -131,7 +131,10 @@ void ClientInterface::connectionStatus()
 void ClientInterface::readMessages()
 {
     QDataStream readData(clientConnection->tcpSocket);
-    QString recievedMessages;
-    readData >> recievedMessages;
-    messageBox->appendPlainText(recievedMessages);
+    QString fromServer;
+    readData >> fromServer;
+    QStringList timeAndMessages = fromServer.split("currentTime:");
+    qDebug() << timeAndMessages;
+    messageBox->appendPlainText(timeAndMessages[1]);
+    messageBox->appendPlainText(timeAndMessages[0]);
 }
