@@ -27,6 +27,8 @@ ClientInterface::ClientInterface(QWidget *parent)
     connect(connectionThread, &QThread::finished, connectionThread, &QThread::deleteLater);
     connect(connectionThread, &QThread::finished, clientConnection, &QObject::deleteLater);
     connectionThread->start();
+
+    connect(userNames, &QListWidget::itemChanged, this, &ClientInterface::changeClientName);
 }
 
 ClientInterface::~ClientInterface()
@@ -68,6 +70,12 @@ void ClientInterface::showUnconnectedMsgBox()
     default:
         break;
     }
+}
+
+void ClientInterface::changeClientName(QListWidgetItem *editItem)
+{
+    localHostName = editItem->text() + " %1";
+    qDebug() << "new:" << localHostName << editItem->text();
 }
 
 void ClientInterface::setInterface()
@@ -120,6 +128,7 @@ void ClientInterface::connectionStatus()
     statusBar()->showMessage("Online");
     userNames->item(0)->setText(localHostName.arg("Online"));
     qDebug() << "Status changed";
+    emit writeMessages(localHostName);
 }
 
 void ClientInterface::readMessages()

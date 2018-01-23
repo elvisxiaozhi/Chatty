@@ -29,7 +29,6 @@ void ServerInterface::setBasicLayout()
     recievedMessages->setMinimumSize(400, 300);
 
     clientsNames = new QListWidget(basicInterface);
-    clientsNames->addItem("No server");
     clientsNames->setMaximumWidth(300);
     clientsNames->setStyleSheet("border: 1px solid black");
 
@@ -62,11 +61,11 @@ void ServerInterface::setBasicLayout()
 void ServerInterface::newClientConnected()
 {
     QTcpSocket *newClient = serverConnection.tcpServer->nextPendingConnection();
+    newClient->readAll(); //to recieve user name when a new client connected to server
     qDebug() << newClient->socketDescriptor();
     connectedClients.push_back(newClient);
     connect(newClient, &QTcpSocket::disconnected, this, &ServerInterface::clientDisconnected);
     connect(newClient, &QTcpSocket::readyRead, this, &ServerInterface::readMessages);
-    qDebug() << "New client connected";
 }
 
 void ServerInterface::clientDisconnected()
@@ -86,9 +85,15 @@ void ServerInterface::readMessages()
     QString messagesFromClients = socket->readAll();
     qDebug() << "Got message from Client: " << messagesFromClients;
     QStringList usernameAndMessages = messagesFromClients.split(" %1");
-    inputBox->clear();
-    inputBox->setText(usernameAndMessages[1]);
-    emit messagesRead();
+    if(usernameAndMessages[1].size() > 0) {
+        inputBox->clear();
+        inputBox->setText(usernameAndMessages[1]);
+        emit messagesRead();
+    }
+    else {
+        //This line will run only when a new client connected to server or changed its name
+        clientsNames->addItem(usernameAndMessages[0]);
+    }
 }
 
 void ServerInterface::sendMessages() {

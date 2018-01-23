@@ -40,6 +40,7 @@ private slots:
     void sendMessages();
     void changeUserName();
     void showUnconnectedMsgBox();
+    void changeClientName(QListWidgetItem *);
 };
 
 #endif // CLIENTINTERFACE_H
