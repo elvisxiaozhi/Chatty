@@ -19,8 +19,8 @@ ClientInterface::ClientInterface(QWidget *parent)
     connect(clientConnection, &Connection::unconnectedState, this, &ClientInterface::showUnconnectedMsgBox);
     connect(this, &ClientInterface::reconnectToServer, clientConnection, &Connection::connectToServer);
     connect(clientConnection->tcpSocket, &QTcpSocket::readyRead, this, &ClientInterface::readMessages);
-    connect(this, &ClientInterface::writeMessages, clientConnection, &Connection::sendMessages);
     connect(sendBtn, &QPushButton::clicked, this, &ClientInterface::sendMessages);
+    connect(this, &ClientInterface::writeMessages, clientConnection, &Connection::sendMessages);
 
     clientConnection->moveToThread(connectionThread);
     connect(connectionThread, &QThread::started, clientConnection, &Connection::connectToServer);
@@ -48,6 +48,7 @@ void ClientInterface::changeUserName()
 {
     QListWidgetItem *editItem = userNames->currentItem();
     editItem->setFlags(editItem->flags() | Qt::ItemIsEditable);
+    qDebug() << "user name changed";
 }
 
 void ClientInterface::showUnconnectedMsgBox()
@@ -75,7 +76,8 @@ void ClientInterface::showUnconnectedMsgBox()
 void ClientInterface::changeClientName(QListWidgetItem *editItem)
 {
     localHostName = editItem->text() + " %1";
-    qDebug() << "new:" << localHostName << editItem->text();
+    qDebug() << localHostName;
+    emit writeMessages(localHostName);
 }
 
 void ClientInterface::setInterface()
@@ -128,7 +130,6 @@ void ClientInterface::connectionStatus()
     statusBar()->showMessage("Online");
     userNames->item(0)->setText(localHostName.arg("Online"));
     qDebug() << "Status changed";
-    emit writeMessages(localHostName);
 }
 
 void ClientInterface::readMessages()
@@ -140,4 +141,6 @@ void ClientInterface::readMessages()
     qDebug() << timeAndMessages;
     messageBox->appendPlainText(timeAndMessages[1]);
     messageBox->appendPlainText(timeAndMessages[0]);
+    messageBox->setStyleSheet("QPlainTextEdit { color: green }");
+    messageBox->appendHtml("<font color = \"red\"> Sample Text</font>");
 }
