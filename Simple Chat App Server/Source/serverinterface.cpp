@@ -78,7 +78,6 @@ void ServerInterface::clientDisconnected()
         connectedClients.removeAll(client);
     }
     onlineClientsNum = connectedClients.size();
-    qDebug() << connectedClients.size() << "sieze";
     emit onlineClientsNumChanged(onlineClientsNum);
     qDebug() << "Client disconnected";
 }
