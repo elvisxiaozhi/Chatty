@@ -11,6 +11,7 @@ ServerInterface::ServerInterface(QWidget *parent)
     connect(sendBtn, &QPushButton::clicked, this, &ServerInterface::clearSocketDescriptor);
     connect(sendBtn, &QPushButton::clicked, this, &ServerInterface::sendMessages);
     connect(this, &ServerInterface::messagesRead, this, &ServerInterface::sendMessages);
+    connect(this, &ServerInterface::onlineClientsNumChanged, this, &ServerInterface::changeOnlineClientsNum);
 }
 
 ServerInterface::~ServerInterface()
@@ -66,6 +67,9 @@ void ServerInterface::newClientConnected()
     connectedClients.push_back(newClient);
     connect(newClient, &QTcpSocket::disconnected, this, &ServerInterface::clientDisconnected);
     connect(newClient, &QTcpSocket::readyRead, this, &ServerInterface::readMessages);
+
+    onlineClientsNum = connectedClients.size();
+    emit onlineClientsNumChanged(onlineClientsNum);
 }
 
 void ServerInterface::clientDisconnected()
@@ -73,6 +77,9 @@ void ServerInterface::clientDisconnected()
     if(auto client = dynamic_cast<QTcpSocket *>(sender())) {
         connectedClients.removeAll(client);
     }
+    onlineClientsNum = connectedClients.size();
+    qDebug() << connectedClients.size() << "sieze";
+    emit onlineClientsNumChanged(onlineClientsNum);
     qDebug() << "Client disconnected";
 }
 
@@ -112,4 +119,9 @@ void ServerInterface::sendMessages() {
 void ServerInterface::clearSocketDescriptor()
 {
     previousSocketDescriptor = 0;
+}
+
+void ServerInterface::changeOnlineClientsNum(int onlineClientsNum)
+{
+    recievedMessages->setText(QString::number(onlineClientsNum));
 }

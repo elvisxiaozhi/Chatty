@@ -24,20 +24,22 @@ private:
     QPushButton *sendBtn;
     QVector<QTcpSocket*> connectedClients;
     Connection serverConnection;
-    void setBasicLayout();
-
     int previousSocketDescriptor;
+    int onlineClientsNum;
+
+    void setBasicLayout();
 
 signals:
     void messagesRead();
+    void onlineClientsNumChanged(int);
 
 private slots:
     void newClientConnected();
     void clientDisconnected();
     void readMessages();
     void sendMessages();
-
     void clearSocketDescriptor();
+    void changeOnlineClientsNum(int);
 };
 
 #endif // SERVERINTERFACE_H
