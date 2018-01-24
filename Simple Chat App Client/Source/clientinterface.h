@@ -20,7 +20,7 @@ public:
 
 private:
     QWidget *clientInterface;
-    QPlainTextEdit *messageBox;
+    QTextEdit *messageBox;
     QTextEdit *inputBox;
     QPushButton *sendBtn;
     QListWidget *userNames;

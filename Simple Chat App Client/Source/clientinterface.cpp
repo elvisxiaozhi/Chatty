@@ -42,6 +42,10 @@ void ClientInterface::sendMessages()
     emit writeMessages(string);
     qDebug() << string;
     qDebug() << "Message sent to server";
+    QString currentTime = QTime::currentTime().toString("h:mm:ss AP");
+    QString sendMessageColor = "<font color = \"blue\">";
+    messageBox->insertHtml(sendMessageColor % currentTime % "<br>");
+    messageBox->insertHtml(sendMessageColor % inputBox->toPlainText() % "<br>");
 }
 
 void ClientInterface::changeUserName()
@@ -85,9 +89,10 @@ void ClientInterface::setInterface()
     clientInterface = new QWidget(this);
     setCentralWidget(clientInterface);
 
-    messageBox = new QPlainTextEdit(clientInterface);
+    messageBox = new QTextEdit(clientInterface);
     messageBox->setMinimumSize(700, 400);
     messageBox->setStyleSheet("border: 1px solid black");
+    messageBox->setReadOnly(true);
 
     localHostName = QHostInfo::localHostName() + " %1";
 
@@ -139,8 +144,7 @@ void ClientInterface::readMessages()
     readData >> fromServer;
     QStringList timeAndMessages = fromServer.split("currentTime:");
     qDebug() << timeAndMessages;
-    messageBox->appendPlainText(timeAndMessages[1]);
-    messageBox->appendPlainText(timeAndMessages[0]);
-    messageBox->setStyleSheet("QPlainTextEdit { color: green }");
-    messageBox->appendHtml("<font color = \"red\"> Sample Text</font>");
+    QString recievedMessageColor = "<font color = \"green\">";
+    messageBox->insertHtml(recievedMessageColor % timeAndMessages[1] % "<br>");
+    messageBox->insertHtml(recievedMessageColor % timeAndMessages[0] % "<br>");
 }
