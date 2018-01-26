@@ -92,20 +92,18 @@ void ServerInterface::readMessages()
     qDebug() << previousSocketDescriptor;
     QString messagesFromClients = socket->readAll();
     qDebug() << "Got message from Client: " << messagesFromClients;
-    for(int i = 0; i < connectedClients.size(); i++) {
-        if(previousSocketDescriptor == connectedClients[i]->socketDescriptor()) {
-            qDebug() << "pos" << i << "username num:" << connectedClientsUsernames.size();
-            if(connectedClientsUsernames.size() > i) {
-                if(std::find(messagesFromClients.begin(), messagesFromClients.end(), "01_clientName: ")) {
+    if(messagesFromClients.contains("01_clientName: ", Qt::CaseSensitive)) {
+        for(int i = 0; i < connectedClients.size(); i++) {
+            if(previousSocketDescriptor == connectedClients[i]->socketDescriptor()) {
+                qDebug() << "pos" << i << "username num:" << connectedClientsUsernames.size();
+                if(connectedClientsUsernames.size() > i) {
                     QStringList userName = messagesFromClients.split("01_clientName: ");
                     qDebug() << userName;
                     connectedClientsUsernames[i] = userName[1];
                     clientsNames->takeItem(i);
                     clientsNames->insertItem(i, userName[1]);
                 }
-            }
-            else {
-                if(std::find(messagesFromClients.begin(), messagesFromClients.end(), "01_clientName: ")) {
+                else {
                     QStringList userName = messagesFromClients.split("01_clientName: ");
                     connectedClientsUsernames.push_back(userName[1]);
                     clientsNames->addItem(userName[1]);
@@ -113,19 +111,11 @@ void ServerInterface::readMessages()
             }
         }
     }
-
-
-//    QStringList usernameAndMessages = messagesFromClients.split(" %1");
-//    if(usernameAndMessages[1].size() > 0) {
-//        inputBox->clear();
-//        inputBox->setText(usernameAndMessages[1]);
-//        emit messagesRead();
-//    }
-//    else {
-//        //This line will run only when a new client connected to server or changed its name
-//        connectedClientsUsernames.push_back(usernameAndMessages[0]);
-//        clientsNames->addItem(usernameAndMessages[0]);
-//    }
+    else {
+        inputBox->clear();
+        inputBox->setText(messagesFromClients);
+        emit messagesRead();
+    }
 }
 
 void ServerInterface::sendMessages() {
