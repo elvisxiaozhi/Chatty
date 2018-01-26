@@ -33,6 +33,7 @@ private:
 signals:
     void writeMessages(QString);
     void reconnectToServer();
+    void disconnectFromServer();
 
 private slots:
     void connectionStatus();

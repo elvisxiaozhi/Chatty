@@ -29,6 +29,7 @@ ClientInterface::ClientInterface(QWidget *parent)
     connectionThread->start();
 
     connect(userNames, &QListWidget::itemChanged, this, &ClientInterface::changeClientName);
+//    connect(this, &ClientInterface::disconnectFromServer, clientConnection, &Connection::disconnectFromServer);
 }
 
 ClientInterface::~ClientInterface()
@@ -79,9 +80,11 @@ void ClientInterface::showUnconnectedMsgBox()
 
 void ClientInterface::changeClientName(QListWidgetItem *editItem)
 {
-    localHostName = editItem->text() + " %1";
+//    localHostName = editItem->text() + " %1";
+    localHostName = "01_clientName: " + editItem->text();
     qDebug() << localHostName;
     emit writeMessages(localHostName);
+//    emit disconnectFromServer();
 }
 
 void ClientInterface::setInterface()

@@ -23,13 +23,12 @@ private:
     QTextEdit *inputBox;
     QPushButton *sendBtn;
     QVector<QTcpSocket*> connectedClients;
+    QVector<QString> connectedClientsUsernames;
     Connection serverConnection;
     int previousSocketDescriptor;
     int onlineClientsNum;
 
     void setBasicLayout();
-
-    QVector<QString> connectedClientsUsernames;
 
 signals:
     void messagesRead();
