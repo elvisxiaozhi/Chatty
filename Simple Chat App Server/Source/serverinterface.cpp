@@ -12,6 +12,7 @@ ServerInterface::ServerInterface(QWidget *parent)
     connect(sendBtn, &QPushButton::clicked, this, &ServerInterface::sendMessages);
     connect(this, &ServerInterface::messagesRead, this, &ServerInterface::sendMessages);
     connect(this, &ServerInterface::onlineClientsNumChanged, this, &ServerInterface::changeOnlineClientsNum);
+    connect(this, &ServerInterface::usernameRemoved, this, &ServerInterface::refreshUserNames); //must connect there, or will cause QVector erase error
 }
 
 ServerInterface::~ServerInterface()
@@ -62,8 +63,6 @@ void ServerInterface::setBasicLayout()
 void ServerInterface::newClientConnected()
 {
     QTcpSocket *newClient = serverConnection.tcpServer->nextPendingConnection();
-    newClient->readAll(); //to recieve user name when a new client connected to server
-    qDebug() << newClient->socketDescriptor();
     connectedClients.push_back(newClient);
     connect(newClient, &QTcpSocket::disconnected, this, &ServerInterface::clientDisconnected);
     connect(newClient, &QTcpSocket::readyRead, this, &ServerInterface::readMessages);
@@ -74,12 +73,15 @@ void ServerInterface::newClientConnected()
 
 void ServerInterface::clientDisconnected()
 {
+    int ClientPos;
     if(auto client = dynamic_cast<QTcpSocket *>(sender())) {
+        ClientPos = std::find(connectedClients.begin(), connectedClients.end(), client) - connectedClients.begin();
         connectedClients.removeAll(client);
+        qDebug() << "Client disconnected";
     }
     onlineClientsNum = connectedClients.size();
     emit onlineClientsNumChanged(onlineClientsNum);
-    qDebug() << "Client disconnected";
+    emit usernameRemoved(ClientPos);
 }
 
 
@@ -98,6 +100,7 @@ void ServerInterface::readMessages()
     }
     else {
         //This line will run only when a new client connected to server or changed its name
+        connectedClientsUsernames.push_back(usernameAndMessages[0]);
         clientsNames->addItem(usernameAndMessages[0]);
     }
 }
@@ -123,4 +126,13 @@ void ServerInterface::clearSocketDescriptor()
 void ServerInterface::changeOnlineClientsNum(int onlineClientsNum)
 {
     recievedMessages->setText(QString::number(onlineClientsNum));
+}
+
+void ServerInterface::refreshUserNames(int userNamePos)
+{
+    clientsNames->clear();
+    connectedClientsUsernames.erase(connectedClientsUsernames.begin() + userNamePos);
+    for(int i = 0; i < connectedClientsUsernames.size(); i++) {
+        clientsNames->addItem(connectedClientsUsernames[i]);
+    }
 }

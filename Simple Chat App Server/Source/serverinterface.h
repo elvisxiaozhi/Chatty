@@ -29,9 +29,12 @@ private:
 
     void setBasicLayout();
 
+    QVector<QString> connectedClientsUsernames;
+
 signals:
     void messagesRead();
     void onlineClientsNumChanged(int);
+    void usernameRemoved(int);
 
 private slots:
     void newClientConnected();
@@ -40,6 +43,7 @@ private slots:
     void sendMessages();
     void clearSocketDescriptor();
     void changeOnlineClientsNum(int);
+    void refreshUserNames(int);
 };
 
 #endif // SERVERINTERFACE_H
