@@ -28,12 +28,14 @@ private:
     QThread *connectionThread = nullptr;
     Connection *clientConnection = nullptr;
 
+    QVector<QString> allOnlineUsers;
+
     void setInterface();
 
 signals:
     void writeMessages(QString);
     void reconnectToServer();
-    void disconnectFromServer();
+    void onlineUsersFresh();
 
 private slots:
     void connectionStatus();
@@ -42,6 +44,7 @@ private slots:
     void changeUserName();
     void showUnconnectedMsgBox();
     void changeClientName(QListWidgetItem *);
+    void refreshOnlineUsers();
 };
 
 #endif // CLIENTINTERFACE_H

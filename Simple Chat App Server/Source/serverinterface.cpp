@@ -122,7 +122,13 @@ void ServerInterface::sendMessages() {
     QByteArray messagesToClients;
     QDataStream out(&messagesToClients, QIODevice::WriteOnly);
     QString currentTime = QTime::currentTime().toString("h:mm:ss AP");
-    out << inputBox->toPlainText() + "currentTime:" + currentTime;
+
+    QString stringsToClients;
+    for(int i = 0; i < connectedClientsUsernames.size(); i++) {
+        stringsToClients += connectedClientsUsernames[i] + "allOnlineClients;";
+    }
+
+    out << inputBox->toPlainText() + "currentTime: " + currentTime + "allOnlineUsers: " + stringsToClients;
 
     foreach (QTcpSocket *client, connectedClients) {
         if(client->socketDescriptor() != previousSocketDescriptor) {

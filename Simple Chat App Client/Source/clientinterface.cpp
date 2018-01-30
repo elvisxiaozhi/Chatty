@@ -29,7 +29,8 @@ ClientInterface::ClientInterface(QWidget *parent)
     connectionThread->start();
 
     connect(userNames, &QListWidget::itemChanged, this, &ClientInterface::changeClientName);
-//    connect(this, &ClientInterface::disconnectFromServer, clientConnection, &Connection::disconnectFromServer);
+
+    connect(this, &ClientInterface::onlineUsersFresh, this, &ClientInterface::refreshOnlineUsers);
 }
 
 ClientInterface::~ClientInterface()
@@ -81,11 +82,17 @@ void ClientInterface::showUnconnectedMsgBox()
 
 void ClientInterface::changeClientName(QListWidgetItem *editItem)
 {
-//    localHostName = editItem->text() + " %1";
     localHostName = "01_clientName: " + editItem->text();
     qDebug() << localHostName;
     emit writeMessages(localHostName);
-//    emit disconnectFromServer();
+}
+
+void ClientInterface::refreshOnlineUsers()
+{
+    userNames->clear();
+    for(int i = 0; i < allOnlineUsers.size(); i++) {
+        userNames->addItem(allOnlineUsers[i]);
+    }
 }
 
 void ClientInterface::setInterface()
@@ -146,9 +153,21 @@ void ClientInterface::readMessages()
     QDataStream readData(clientConnection->tcpSocket);
     QString fromServer;
     readData >> fromServer;
-    QStringList timeAndMessages = fromServer.split("currentTime:");
-    qDebug() << timeAndMessages;
+
+    QStringList textAndUsernames = fromServer.split("allOnlineUsers: ");
+    qDebug() << textAndUsernames;
+
+    QStringList messageAndTime = textAndUsernames[0].split("currentTime: ");
+    qDebug() << "message and time: " << messageAndTime;
     QString recievedMessageColor = "<font color = \"green\">";
-    messageBox->insertHtml(recievedMessageColor % timeAndMessages[1] % "<br>");
-    messageBox->insertHtml(recievedMessageColor % timeAndMessages[0] % "<br>");
+    messageBox->insertHtml(recievedMessageColor % messageAndTime[1] % "<br>");
+    messageBox->insertHtml(recievedMessageColor % messageAndTime[0] % "<br>");
+
+    QStringList allOnlineClients = textAndUsernames[1].split("allOnlineClients;");
+    allOnlineUsers.clear();
+    for(int i = 0; i < allOnlineClients.size() - 1; i++) {
+        allOnlineUsers.push_back(allOnlineClients[i]);
+    }
+    qDebug() << "all user names: " << allOnlineClients;
+    emit onlineUsersFresh();
 }
