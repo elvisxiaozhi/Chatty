@@ -34,10 +34,3 @@ void Connection::getError(QAbstractSocket::SocketError error)
         emit unconnectedState();
     }
 }
-
-void Connection::disconnectFromServer()
-{
-    tcpSocket->disconnectFromHost();
-    qDebug() << "Disconnected from server";
-    connectToServer();
-}

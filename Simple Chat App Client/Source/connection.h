@@ -21,7 +21,6 @@ public slots:
     void connectToServer();
     void sendMessages(QString);
     void getError(QAbstractSocket::SocketError);
-    void disconnectFromServer();
 };
 
 #endif // CONNECTION_H

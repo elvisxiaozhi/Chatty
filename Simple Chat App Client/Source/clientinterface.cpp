@@ -40,8 +40,7 @@ ClientInterface::~ClientInterface()
 
 void ClientInterface::sendMessages()
 {
-//    localHostName = QHostInfo::localHostName() + " %1";
-    QString string =/* localHostName +*/ inputBox->toPlainText();
+    QString string = inputBox->toPlainText();
     emit writeMessages(string);
     qDebug() << string;
     qDebug() << "Message sent to server";
