@@ -17,6 +17,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::setWindowLayout()
 {
+    setWindowTitle("Chatty");
+
     ui->msBox->setReadOnly(true);
     ui->msBox->setStyleSheet("border: 1px solid black");
 

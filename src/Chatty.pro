@@ -32,3 +32,5 @@ HEADERS += \
 
 FORMS += \
         mainwindow.ui
+
+RC_ICONS += icons/chatty.ico
