@@ -8,6 +8,12 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     setWindowLayout();
+
+    connection = new Connection(this);
+
+    connect(connection, &Connection::connected, this, &MainWindow::connected);
+
+    connection->connect();
 }
 
 MainWindow::~MainWindow()
@@ -25,4 +31,9 @@ void MainWindow::setWindowLayout()
     ui->userList->setStyleSheet("border: 1px solid black");
 
     statusBar()->showMessage(tr("Offline"));
+}
+
+void MainWindow::connected()
+{
+    statusBar()->showMessage(tr("Online"));
 }

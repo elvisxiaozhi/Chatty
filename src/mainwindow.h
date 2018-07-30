@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "connection.h"
 
 namespace Ui {
 class MainWindow;
@@ -17,8 +18,12 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    Connection *connection;
 
     void setWindowLayout();
+
+private slots:
+    void connected();
 };
 
 #endif // MAINWINDOW_H
