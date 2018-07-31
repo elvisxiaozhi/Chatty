@@ -3,20 +3,20 @@
 
 #include <QObject>
 #include <QTcpSocket>
+#include <QAbstractSocket>
 
-class Connection : public QObject
+class Connection : public QTcpSocket
 {
     Q_OBJECT
 public:
     explicit Connection(QObject *parent = nullptr);
     void connect();
-    void sendMessage(QString);
-
-private:
-    QTcpSocket *socket;
 
 signals:
     void connected();
+
+private slots:
+    void getError(QAbstractSocket::SocketError);
 };
 
 #endif // CONNECTION_H

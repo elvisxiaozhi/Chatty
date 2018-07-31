@@ -1,25 +1,26 @@
 #include "connection.h"
 #include <QHostAddress>
 #include <QDebug>
+#include <QAbstractSocket>
 
-Connection::Connection(QObject *parent) : QObject(parent)
+Connection::Connection(QObject *parent) : QTcpSocket(parent)
 {
-    socket = new QTcpSocket(this);
+//    connect(this, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error), this, &Connection::getError);
 }
 
 void Connection::connect()
 {
-    socket->abort();
-    socket->connectToHost(QHostAddress("127.0.0.1"), 6666);
-    if(socket->waitForConnected()) {
-        connected();
+    abort();
+    connectToHost(QHostAddress("127.0.0.1"), 6666);
+    if(waitForConnected()) {
+        emit connected();
     }
     else {
         qDebug() << "Failed to connect";
     }
 }
 
-void Connection::sendMessage(QString message)
+void Connection::getError(QAbstractSocket::SocketError error)
 {
-    socket->write(message.toUtf8());
+    qDebug() << error;
 }

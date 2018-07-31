@@ -42,5 +42,5 @@ void MainWindow::connected()
 void MainWindow::sendMessage()
 {
     QString message = ui->inputBox->toPlainText();
-    connection->sendMessage(message);
+    connection->write(message.toUtf8());
 }
