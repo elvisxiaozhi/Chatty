@@ -11,8 +11,6 @@ public:
     explicit Connection(QObject *parent = nullptr);
     ~Connection();
 
-private:
-
 private slots:
     void incomingConnection(qintptr);
 };

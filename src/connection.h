@@ -10,6 +10,7 @@ class Connection : public QObject
 public:
     explicit Connection(QObject *parent = nullptr);
     void connect();
+    void sendMessage(QString);
 
 private:
     QTcpSocket *socket;

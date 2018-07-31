@@ -1,5 +1,4 @@
 #include "socketthread.h"
-#include <QDataStream>
 #include <QDebug>
 
 SocketThread::SocketThread(qintptr descriptor, QObject *parent)
@@ -11,7 +10,7 @@ SocketThread::SocketThread(qintptr descriptor, QObject *parent)
     socket->moveToThread(this);
     this->start();
 
-    connect(socket, &QTcpSocket::readyRead, this, &SocketThread::readyRead, Qt::DirectConnection);
+    connect(socket, &QTcpSocket::readyRead, this, &SocketThread::readMessage, Qt::DirectConnection);
     connect(socket, &QTcpSocket::disconnected, this, &SocketThread::disconnected, Qt::DirectConnection);
 }
 
@@ -21,16 +20,10 @@ SocketThread::~SocketThread()
     wait();
 }
 
-void SocketThread::readyRead()
+void SocketThread::readMessage()
 {
-    QDataStream in(socket);
-    in.setVersion(QDataStream::Qt_5_10);
-
-    QString message;
-    in >> message;
-    qDebug() << message;
-
-    socket->disconnectFromHost();
+    QString message = socket->readAll();
+    qDebug() << "From client" << socket->socketDescriptor() << message;
 }
 
 void SocketThread::disconnected()

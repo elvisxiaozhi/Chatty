@@ -12,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connection = new Connection(this);
 
     connect(connection, &Connection::connected, this, &MainWindow::connected);
+    connect(ui->pushButton, &QPushButton::clicked, this, &MainWindow::sendMessage);
 
     connection->connect();
 }
@@ -36,4 +37,10 @@ void MainWindow::setWindowLayout()
 void MainWindow::connected()
 {
     statusBar()->showMessage(tr("Online"));
+}
+
+void MainWindow::sendMessage()
+{
+    QString message = ui->inputBox->toPlainText();
+    connection->sendMessage(message);
 }

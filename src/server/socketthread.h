@@ -17,7 +17,7 @@ private:
     qintptr socketDescriptor;
 
 private slots:
-    void readyRead();
+    void readMessage();
     void disconnected();
 };
 

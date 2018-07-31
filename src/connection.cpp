@@ -18,3 +18,8 @@ void Connection::connect()
         qDebug() << "Failed to connect";
     }
 }
+
+void Connection::sendMessage(QString message)
+{
+    socket->write(message.toUtf8());
+}

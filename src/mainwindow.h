@@ -24,6 +24,7 @@ private:
 
 private slots:
     void connected();
+    void sendMessage();
 };
 
 #endif // MAINWINDOW_H
