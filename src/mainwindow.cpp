@@ -12,9 +12,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connection = new Connection(this);
 
     connect(connection, &Connection::connected, this, &MainWindow::connected);
+    connect(connection, &Connection::unconnected, this, [this](){ statusBar()->showMessage(tr("Offline")); });
     connect(ui->pushButton, &QPushButton::clicked, this, &MainWindow::sendMessage);
 
-    connection->connect();
+    connection->connectToServer();
 }
 
 MainWindow::~MainWindow()

@@ -10,10 +10,11 @@ class Connection : public QTcpSocket
     Q_OBJECT
 public:
     explicit Connection(QObject *parent = nullptr);
-    void connect();
+    void connectToServer();
 
 signals:
     void connected();
+    void unconnected();
 
 private slots:
     void getError(QAbstractSocket::SocketError);

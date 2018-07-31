@@ -16,7 +16,7 @@ Connection::~Connection()
 void Connection::incomingConnection(qintptr socketDescriptor)
 {
     SocketThread *socketThread = new SocketThread(socketDescriptor);
-    connect(socketThread, &SocketThread::finished, [this, &socketThread, socketDescriptor]() {
+    connect(socketThread, &SocketThread::finished, [&]() {
         qDebug() << "Client" << socketDescriptor << "disconnected.";
         delete socketThread;
     });
