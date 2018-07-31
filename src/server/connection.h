@@ -4,14 +4,17 @@
 #include <QObject>
 #include <QTcpServer>
 
-class Connection : public QObject
+class Connection : public QTcpServer
 {
     Q_OBJECT
 public:
-    Connection();
+    explicit Connection(QObject *parent = nullptr);
+    ~Connection();
 
 private:
-    QTcpServer *server;
+
+private slots:
+    void incomingConnection(qintptr);
 };
 
 #endif // CONNECTION_H
