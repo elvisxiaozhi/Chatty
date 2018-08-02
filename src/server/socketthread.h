@@ -16,6 +16,9 @@ private:
     QTcpSocket *socket;
     qintptr socketDescriptor;
 
+signals:
+    void clientDisconnected();
+
 private slots:
     void readMessage();
     void disconnected();

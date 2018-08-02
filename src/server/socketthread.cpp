@@ -29,5 +29,5 @@ void SocketThread::readMessage()
 void SocketThread::disconnected()
 {
     socket->close();
-    quit();
+    emit clientDisconnected();
 }
