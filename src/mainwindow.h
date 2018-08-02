@@ -19,11 +19,14 @@ public:
 private:
     Ui::MainWindow *ui;
     Connection *connection;
+    QWidget *statusWidget;
 
     void setWindowLayout();
+    void setOfflineStatusBar();
 
 private slots:
     void connected();
+    void unconnected();
     void sendMessage();
 };
 
