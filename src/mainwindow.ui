@@ -77,7 +77,7 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="sendBtn">
         <property name="text">
          <string>Send</string>
         </property>
@@ -110,7 +110,7 @@
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
   <tabstop>inputBox</tabstop>
-  <tabstop>pushButton</tabstop>
+  <tabstop>sendBtn</tabstop>
   <tabstop>msBox</tabstop>
   <tabstop>userList</tabstop>
  </tabstops>

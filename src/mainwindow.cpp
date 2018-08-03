@@ -3,6 +3,7 @@
 #include <QStatusBar>
 #include <QLabel>
 #include <QPushButton>
+#include <QTime>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -15,7 +16,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(connection, &Connection::connected, this, &MainWindow::connected);
     connect(connection, &Connection::unconnected, this, &MainWindow::unconnected);
-    connect(ui->pushButton, &QPushButton::clicked, this, &MainWindow::sendMessage);
+    connect(connection, &Connection::readyRead, this, &MainWindow::readMessage);
+    connect(ui->sendBtn, &QPushButton::clicked, this, &MainWindow::sendMessage);
 
     connection->connectToServer();
 }
@@ -76,4 +78,17 @@ void MainWindow::sendMessage()
 {
     QString message = ui->inputBox->toPlainText();
     connection->write(message.toUtf8());
+
+    QString currentTime = QTime::currentTime().toString("h:mm:ss AP");
+    QString msColor = "<font color = \"blue\">";
+    ui->msBox->insertHtml(msColor + currentTime + "<br>");
+    ui->msBox->insertHtml(msColor + ui->inputBox->toPlainText() + "<br>");
+
+    ui->inputBox->clear();
+}
+
+void MainWindow::readMessage()
+{
+    QString message = connection->readAll();
+    qDebug() << message;
 }
