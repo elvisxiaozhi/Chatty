@@ -2,7 +2,6 @@
 #include <QHostAddress>
 #include <QTcpSocket>
 #include <QDebug>
-#include "socketthread.h"
 
 Connection::Connection(QObject *parent) : QTcpServer(parent)
 {
@@ -16,10 +15,18 @@ Connection::~Connection()
 void Connection::incomingConnection(qintptr socketDescriptor)
 {
     SocketThread *socketThread = new SocketThread(socketDescriptor);
+
+    threadVec.push_back(socketThread);
+
     connect(socketThread, &SocketThread::clientDisconnected, socketThread, &SocketThread::quit);
     connect(socketThread, &SocketThread::finished, [&, socketDescriptor]() {
-        qDebug() << "Client" << socketDescriptor << "disconnected.";
-        delete socketThread;
+        for(int i = 0; i < threadVec.size(); ++i) {
+            if(threadVec[i]->socketDescriptor == socketDescriptor) {
+                threadVec[i]->deleteLater();
+                threadVec.erase(threadVec.begin() + i);
+                qDebug() << "Client" << socketDescriptor << "disconnected.";
+            }
+        }
     });
     qDebug() << "Client" << socketDescriptor << "connected.";
 }

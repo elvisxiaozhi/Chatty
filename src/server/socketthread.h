@@ -11,10 +11,10 @@ class SocketThread : public QThread
 public:
     SocketThread(qintptr descriptor, QObject *parent = 0);
     ~SocketThread();
+    qintptr socketDescriptor;
 
 private:
     QTcpSocket *socket;
-    qintptr socketDescriptor;
 
 signals:
     void clientDisconnected();

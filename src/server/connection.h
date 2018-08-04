@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QTcpServer>
+#include "socketthread.h"
 
 class Connection : public QTcpServer
 {
@@ -10,6 +11,9 @@ class Connection : public QTcpServer
 public:
     explicit Connection(QObject *parent = nullptr);
     ~Connection();
+
+private:
+    QVector<SocketThread *> threadVec;
 
 private slots:
     void incomingConnection(qintptr);
