@@ -20,6 +20,11 @@ SocketThread::~SocketThread()
     wait();
 }
 
+void SocketThread::writeToClient(QString message)
+{
+    socket->write(message.toUtf8());
+}
+
 void SocketThread::readMessage()
 {
     QString message = socket->readAll();
@@ -29,5 +34,5 @@ void SocketThread::readMessage()
 void SocketThread::disconnected()
 {
     socket->close();
-    emit clientDisconnected();
+    quit();
 }

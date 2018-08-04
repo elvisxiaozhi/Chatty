@@ -6,6 +6,8 @@
 Connection::Connection(QObject *parent) : QTcpServer(parent)
 {
     this->listen(QHostAddress::Any, 6666);
+
+    connect(this, &Connection::newConnection, this, &Connection::testing);
 }
 
 Connection::~Connection()
@@ -18,7 +20,7 @@ void Connection::incomingConnection(qintptr socketDescriptor)
 
     threadVec.push_back(socketThread);
 
-    connect(socketThread, &SocketThread::clientDisconnected, socketThread, &SocketThread::quit);
+    connect(this, &Connection::writeToClient, socketThread, &SocketThread::writeToClient);
     connect(socketThread, &SocketThread::finished, [&, socketDescriptor]() {
         for(int i = 0; i < threadVec.size(); ++i) {
             if(threadVec[i]->socketDescriptor == socketDescriptor) {
@@ -29,4 +31,13 @@ void Connection::incomingConnection(qintptr socketDescriptor)
         }
     });
     qDebug() << "Client" << socketDescriptor << "connected.";
+}
+
+void Connection::testing()
+{
+    QString message = "Connected clients: ";
+    for(int i = 0; i < threadVec.size(); ++i) {
+        message.append(QString::number(threadVec[i]->socketDescriptor) + " ");
+    }
+//    emit writeToClient(message);
 }
