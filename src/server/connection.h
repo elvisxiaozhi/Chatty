@@ -20,7 +20,7 @@ signals:
 
 private slots:
     void incomingConnection(qintptr);
-    void testing();
+    void clientConnected();
 };
 
 #endif // CONNECTION_H

@@ -11,13 +11,13 @@ class SocketThread : public QThread
 public:
     SocketThread(qintptr descriptor, QObject *parent = 0);
     ~SocketThread();
-    QTcpSocket *socket;
     qintptr socketDescriptor;
 
 private:
+    QTcpSocket *socket;
 
-public slots:
-    void writeToClient(QString);
+signals:
+    void messageToClient(QString);
 
 private slots:
     void readMessage();

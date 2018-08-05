@@ -10,6 +10,8 @@ SocketThread::SocketThread(qintptr descriptor, QObject *parent)
     socket->moveToThread(this);
     this->start();
 
+//    connect(this, &SocketThread::started, [this](){ socket->write("Hey"); socket->waitForBytesWritten(); socket->flush(); });
+    connect(this, &SocketThread::messageToClient, [this](QString message) { socket->write(message.toUtf8()); });
     connect(socket, &QTcpSocket::readyRead, this, &SocketThread::readMessage, Qt::DirectConnection);
     connect(socket, &QTcpSocket::disconnected, this, &SocketThread::disconnected, Qt::DirectConnection);
 }
@@ -18,11 +20,6 @@ SocketThread::~SocketThread()
 {
     quit();
     wait();
-}
-
-void SocketThread::writeToClient(QString message)
-{
-    socket->write(message.toUtf8());
 }
 
 void SocketThread::readMessage()
