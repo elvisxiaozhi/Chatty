@@ -17,10 +17,11 @@ Connection::~Connection()
 void Connection::incomingConnection(qintptr socketDescriptor)
 {
     SocketThread *socketThread = new SocketThread(socketDescriptor);
+    socketThread->start();
 
     threadVec.push_back(socketThread);
 
-    connect(socketThread, &SocketThread::started, [&]() { emit socketThread->messageToClient("Hello"); });
+    connect(socketThread, &SocketThread::started, [&]() { socketThread->socket->write(clientConnected().toUtf8()); });
     connect(socketThread, &SocketThread::finished, [&, socketDescriptor]() {
         for(int i = 0; i < threadVec.size(); ++i) {
             if(threadVec[i]->socketDescriptor == socketDescriptor) {
@@ -33,10 +34,11 @@ void Connection::incomingConnection(qintptr socketDescriptor)
     qDebug() << "Client" << socketDescriptor << "connected.";
 }
 
-void Connection::clientConnected()
+QString Connection::clientConnected()
 {
     QString message = "Connected clients: ";
     for(int i = 0; i < threadVec.size(); ++i) {
         message.append(QString::number(threadVec[i]->socketDescriptor) + " ");
     }
+    return message;
 }

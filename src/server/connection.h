@@ -15,12 +15,9 @@ public:
 private:
     QVector<SocketThread *> threadVec;
 
-signals:
-    void writeToClient(QString);
-
 private slots:
     void incomingConnection(qintptr);
-    void clientConnected();
+    QString clientConnected();
 };
 
 #endif // CONNECTION_H
