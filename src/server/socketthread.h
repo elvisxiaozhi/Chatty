@@ -16,8 +16,9 @@ public:
 
 signals:
     void error(QTcpSocket::SocketError socketerror);
+    void connected(QString);
 
-public slots:
+private slots:
     void readyRead();
     void disconnected();
 

@@ -13,6 +13,7 @@ public:
 
 private:
     QVector<SocketThread *> threadVec;
+    QString returnSocketName();
 
 protected:
     void incomingConnection(qintptr socketDescriptor);

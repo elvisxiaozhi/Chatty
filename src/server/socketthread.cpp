@@ -12,30 +12,22 @@ SocketThread::~SocketThread()
 
 void SocketThread::run()
 {
-    // thread starts here
-
     socket = new QTcpSocket();
 
     // set the ID
     if(!socket->setSocketDescriptor(socketDescriptor)) {
-        // something's wrong, we just emit a signal
-        emit error(socket->error());
+        emit error(socket->error());  // something's wrong, we just emit a signal
         return;
     }
 
-    // note - Qt::DirectConnection is used because it's multithreaded
-    //        This makes the slot to be invoked immediately, when the signal is emitted.
+    // note - Qt::DirectConnection is used because it's multithreaded. This makes the slot to be invoked immediately, when the signal is emitted.
     connect(socket, &QTcpSocket::readyRead, this, &SocketThread::readyRead, Qt::DirectConnection);
     connect(socket, &QTcpSocket::disconnected, this, &SocketThread::disconnected);
 
     // We'll have multiple clients, we want to know which is which
     qDebug() << socketDescriptor << " Client connected";
 
-    // make this thread a loop,
-    // thread will stay alive so that signal/slot to function properly
-    // not dropped out in the middle when thread dies
-
-    socket->write("Hello");
+//    socket->write("Hello");
 
     exec();
 }

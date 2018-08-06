@@ -13,6 +13,15 @@ void Server::startServer()
     }
 }
 
+QString Server::returnSocketName()
+{
+    QString message = "Connected socket: ";
+    for(int i = 0; i < threadVec.size(); ++i) {
+        message.append(QString::number(threadVec[i]->socketDescriptor)) + " ";
+    }
+    return message;
+}
+
 void Server::incomingConnection(qintptr socketDescriptor)
 {
     SocketThread *thread = new SocketThread(socketDescriptor, this);
@@ -30,4 +39,6 @@ void Server::incomingConnection(qintptr socketDescriptor)
     });
 
     thread->start();
+
+    thread->connected(returnSocketName());
 }
