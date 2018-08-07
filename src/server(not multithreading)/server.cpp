@@ -16,6 +16,11 @@ void Server::startServer()
 void Server::clientConnected()
 {
     QTcpSocket *socket = nextPendingConnection();
+
+    for(int i = 0; i < socketVec.size(); ++i) {
+        ;
+    }
+
     socketVec.push_back(socket);
 
     int socketDescriptor = socket->socketDescriptor();
@@ -30,14 +35,16 @@ void Server::clientConnected()
 
 void Server::readyRead()
 {
+    socketSender = static_cast<QTcpSocket *>(sender());
 
+    qDebug() << socketSender->socketDescriptor() << socketSender->readAll();
 }
 
 void Server::disconnected()
 {
-    QTcpSocket *socket = static_cast<QTcpSocket *>(sender());
-    int pos = std::find(socketVec.begin(), socketVec.end(), socket) - socketVec.begin();
+    socketSender = static_cast<QTcpSocket *>(sender());
+    int pos = std::find(socketVec.begin(), socketVec.end(), socketSender) - socketVec.begin();
     socketVec[pos]->deleteLater();
     socketVec.erase(socketVec.begin() + pos);
-    socket->deleteLater();
+    socketSender->deleteLater();
 }

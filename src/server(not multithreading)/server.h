@@ -15,6 +15,7 @@ public:
 
 private:
     QVector<QTcpSocket *> socketVec;
+    QTcpSocket *socketSender;
 
 private slots:
     void clientConnected();

@@ -13,7 +13,6 @@ public:
     void connectToServer();
 
 signals:
-    void connected();
     void unconnected();
 
 private slots:
