@@ -20,7 +20,7 @@ private:
     QTcpSocket *socket;
 
 signals:
-    void error(QTcpSocket::SocketError socketerror);
+    void error(QTcpSocket::SocketError);
 
 private slots:
     void readyRead();

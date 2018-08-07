@@ -20,6 +20,7 @@ private:
     Ui::MainWindow *ui;
     Connection *connection;
     QWidget *statusWidget;
+    QString localHostName;
 
     void setWindowLayout();
     void setOfflineStatusBar();

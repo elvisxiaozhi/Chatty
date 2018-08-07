@@ -4,6 +4,7 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QTime>
+#include <QHostInfo>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -31,10 +32,13 @@ void MainWindow::setWindowLayout()
 {
     setWindowTitle("Chatty");
 
+    localHostName = QHostInfo::localHostName();
+
     ui->msBox->setReadOnly(true);
     ui->msBox->setStyleSheet("border: 1px solid black");
 
     ui->userList->setStyleSheet("border: 1px solid black");
+    ui->userList->addItem(localHostName);
 
     setOfflineStatusBar();
     statusBar()->addWidget(statusWidget);
@@ -64,6 +68,8 @@ void MainWindow::connected()
 {
     statusBar()->removeWidget(statusWidget);
     statusBar()->showMessage(tr("Online"));
+
+    connection->write(localHostName.toUtf8());
 }
 
 void MainWindow::unconnected()
