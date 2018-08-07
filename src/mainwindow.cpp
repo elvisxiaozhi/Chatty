@@ -38,7 +38,7 @@ void MainWindow::setWindowLayout()
     ui->msBox->setStyleSheet("border: 1px solid black");
 
     ui->userList->setStyleSheet("border: 1px solid black");
-    ui->userList->addItem(localHostName);
+    ui->userList->addItem(localHostName + " :)");
 
     setOfflineStatusBar();
     statusBar()->addWidget(statusWidget);
@@ -69,7 +69,7 @@ void MainWindow::connected()
     statusBar()->removeWidget(statusWidget);
     statusBar()->showMessage(tr("Online"));
 
-    connection->write(localHostName.toUtf8());
+    connection->write("localHostName: " + localHostName.toUtf8());
 }
 
 void MainWindow::unconnected()
@@ -96,5 +96,18 @@ void MainWindow::sendMessage()
 void MainWindow::readMessage()
 {
     QString message = connection->readAll();
-    qDebug() << message;
+
+    if(message.contains(" onlineUser: ")) {
+        QStringList onlineUsers = message.split(" onlineUser: ");
+        for(int i = 0; i < onlineUsers.size(); ++i) {
+            ui->userList->addItem(onlineUsers[i]);
+            ++i;
+        }
+    }
+    else {
+        QString currentTime = QTime::currentTime().toString("h:mm:ss AP");
+        QString msColor = "<font color = \"green\">";
+        ui->msBox->insertHtml(msColor + currentTime + "<br>");
+        ui->msBox->insertHtml(msColor + message + "<br>");
+    }
 }

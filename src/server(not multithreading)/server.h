@@ -15,6 +15,7 @@ public:
 
 private:
     QVector<QTcpSocket *> socketVec;
+    QVector<QString> usernameVec;
     QTcpSocket *socketSender;
 
 private slots:

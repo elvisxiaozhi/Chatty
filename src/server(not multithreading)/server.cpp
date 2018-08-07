@@ -17,8 +17,14 @@ void Server::clientConnected()
 {
     QTcpSocket *socket = nextPendingConnection();
 
-    for(int i = 0; i < socketVec.size(); ++i) {
-        ;
+    QString message;
+    for(int i = 0; i < usernameVec.size(); ++i) {
+        message.append(usernameVec[i] + " onlineUser: ");
+    }
+    qDebug() << message;
+
+    if(message.size() > 0) {
+        socket->write(message.toUtf8());
     }
 
     socketVec.push_back(socket);
@@ -37,7 +43,11 @@ void Server::readyRead()
 {
     socketSender = static_cast<QTcpSocket *>(sender());
 
-    qDebug() << socketSender->socketDescriptor() << socketSender->readAll();
+    QString message = socketSender->readAll();
+
+    if(message.contains("localHostName: ")) {
+        usernameVec.push_back(message.split("localHostName: ").at(1));
+    }
 }
 
 void Server::disconnected()
@@ -46,5 +56,6 @@ void Server::disconnected()
     int pos = std::find(socketVec.begin(), socketVec.end(), socketSender) - socketVec.begin();
     socketVec[pos]->deleteLater();
     socketVec.erase(socketVec.begin() + pos);
+    usernameVec.erase(usernameVec.begin() + pos);
     socketSender->deleteLater();
 }
