@@ -27,7 +27,7 @@ void SocketThread::run()
     // We'll have multiple clients, we want to know which is which
     qDebug() << socketDescriptor << " Client connected";
 
-//    socket->write("Hello");
+    socket->write(message.toUtf8());
 
     exec();
 }

@@ -16,7 +16,7 @@ private:
     QString returnSocketName();
 
 protected:
-    void incomingConnection(qintptr socketDescriptor);
+    void incomingConnection(qintptr socketDescriptor) override;
 
 };
 

@@ -12,18 +12,19 @@ public:
     SocketThread(qintptr ID, QObject *parent = 0);
     ~SocketThread();
     qintptr socketDescriptor;
-    void run();
+    QString message;
+
+    void run() override;
+
+private:
+    QTcpSocket *socket;
 
 signals:
     void error(QTcpSocket::SocketError socketerror);
-    void connected(QString);
 
 private slots:
     void readyRead();
     void disconnected();
-
-private:
-    QTcpSocket *socket;
 };
 
 #endif

@@ -28,6 +28,8 @@ void Server::incomingConnection(qintptr socketDescriptor)
 
     threadVec.push_back(thread);
 
+    thread->message = returnSocketName(); //assign string to message after thread is stored to vector
+
     // once a thread is not needed, it will be beleted later
     connect(thread, &SocketThread::finished, [&, socketDescriptor]() {
         for(int i = 0; i < threadVec.size(); ++i) {
@@ -39,6 +41,4 @@ void Server::incomingConnection(qintptr socketDescriptor)
     });
 
     thread->start();
-
-    thread->connected(returnSocketName());
 }
