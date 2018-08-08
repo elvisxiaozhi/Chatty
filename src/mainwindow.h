@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "connection.h"
+#include <QModelIndex>
 
 namespace Ui {
 class MainWindow;
@@ -30,6 +31,7 @@ private slots:
     void unconnected();
     void sendMessage();
     void readMessage();
+    void usernameSelected(QModelIndex);
 };
 
 #endif // MAINWINDOW_H

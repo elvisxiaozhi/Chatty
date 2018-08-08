@@ -21,7 +21,6 @@ void Server::clientConnected()
     for(int i = 0; i < usernameVec.size(); ++i) {
         message.append(usernameVec[i] + " onlineUser: ");
     }
-    qDebug() << message;
 
     if(message.size() > 0) {
         socket->write(message.toUtf8());

@@ -5,6 +5,7 @@
 #include <QPushButton>
 #include <QTime>
 #include <QHostInfo>
+#include <QModelIndex>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -19,6 +20,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(connection, &Connection::unconnected, this, &MainWindow::unconnected);
     connect(connection, &Connection::readyRead, this, &MainWindow::readMessage);
     connect(ui->sendBtn, &QPushButton::clicked, this, &MainWindow::sendMessage);
+    connect(ui->userList, &QListWidget::clicked, this, &MainWindow::usernameSelected);
 
     connection->connectToServer();
 }
@@ -110,4 +112,13 @@ void MainWindow::readMessage()
         ui->msBox->insertHtml(msColor + currentTime + "<br>");
         ui->msBox->insertHtml(msColor + message + "<br>");
     }
+}
+
+void MainWindow::usernameSelected(QModelIndex)
+{
+    for(int i = 0; i < ui->userList->count(); ++i) {
+        ui->userList->item(i)->setBackground(Qt::blue);
+    }
+
+    ui->userList->currentItem()->setBackground(Qt::red);
 }
