@@ -22,6 +22,7 @@ private:
     Connection *connection;
     QWidget *statusWidget;
     QString localHostName;
+    QVector<QString> socketDescriptorVec;
 
     void setWindowLayout();
     void setOfflineStatusBar();

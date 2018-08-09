@@ -17,9 +17,12 @@ void Server::clientConnected()
 {
     QTcpSocket *socket = nextPendingConnection();
 
+    int socketDescriptor = socket->socketDescriptor();
+    qDebug() << socketDescriptor << "connected.";
+
     QString message;
     for(int i = 0; i < usernameVec.size(); ++i) {
-        message.append(usernameVec[i] + " onlineUser: ");
+        message.append(usernameVec[i] + " onlineUser: " + QString::number(socketDescriptor));
     }
 
     if(message.size() > 0) {
@@ -27,9 +30,6 @@ void Server::clientConnected()
     }
 
     socketVec.push_back(socket);
-
-    int socketDescriptor = socket->socketDescriptor();
-    qDebug() << socketDescriptor << "connected.";
 
     connect(socket, &QTcpSocket::readyRead, this, &Server::readyRead);
     connect(socket, &QTcpSocket::disconnected, [this, socketDescriptor]() {
@@ -46,6 +46,10 @@ void Server::readyRead()
 
     if(message.contains("localHostName: ")) {
         usernameVec.push_back(message.split("localHostName: ").at(1));
+    }
+    if(message.contains("messageSendTo: ")) {
+        QStringList stringList = QString(message.split("messageSendTo: ").at(1)).split("hereAreMessages: ");
+        qDebug() << stringList << stringList[0].toInt();
     }
 }
 

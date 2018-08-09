@@ -84,8 +84,14 @@ void MainWindow::unconnected()
 
 void MainWindow::sendMessage()
 {
+    int index = 0;
+    if(ui->userList->currentRow() != 0) {
+        index = ui->userList->currentRow() - 1;
+    }
+
     QString message = ui->inputBox->toPlainText();
-    connection->write(message.toUtf8());
+    connection->write("messageSendTo: " + socketDescriptorVec[index].toUtf8() + "hereAreMessages: " + message.toUtf8());
+    qDebug() << socketDescriptorVec;
 
     QString currentTime = QTime::currentTime().toString("h:mm:ss AP");
     QString msColor = "<font color = \"blue\">";
@@ -103,8 +109,10 @@ void MainWindow::readMessage()
         QStringList onlineUsers = message.split(" onlineUser: ");
         for(int i = 0; i < onlineUsers.size(); ++i) {
             ui->userList->addItem(onlineUsers[i]);
+            socketDescriptorVec.push_back(onlineUsers[i + 1]);
             ++i;
         }
+        qDebug() << socketDescriptorVec;
     }
     else {
         QString currentTime = QTime::currentTime().toString("h:mm:ss AP");
