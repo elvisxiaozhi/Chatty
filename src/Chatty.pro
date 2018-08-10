@@ -27,13 +27,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    connection.cpp
+    connection.cpp \
+    mainwidget.cpp
 
 HEADERS += \
         mainwindow.h \
-    connection.h
+    connection.h \
+    mainwidget.h
 
 FORMS += \
-        mainwindow.ui
+        mainwindow.ui \
+    mainwidget.ui
 
 RC_ICONS += icons/chatty.ico
