@@ -8,6 +8,8 @@ namespace Ui {
 class MainWidget;
 }
 
+class QListWidgetItem;
+
 class MainWidget : public QWidget
 {
     Q_OBJECT
@@ -20,14 +22,17 @@ private:
     Ui::MainWidget *ui;
 
     Socket *socket;
+    QVector<QListWidgetItem *> userVec;
 
     void setWindowLayout();
     void setSocket();
+    void addToUserVec();
 
 private slots:
     void connected();
     void unconnected();
     void statusChanged(int);
+    void readMessage();
 };
 
 #endif // MAINWIDGET_H

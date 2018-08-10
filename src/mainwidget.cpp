@@ -9,6 +9,8 @@ MainWidget::MainWidget(QWidget *parent) :
     ui->setupUi(this);
     setWindowLayout();
     setSocket();
+
+    addToUserVec();
 }
 
 MainWidget::~MainWidget()
@@ -34,8 +36,20 @@ void MainWidget::setSocket()
 
     connect(socket, &Socket::connected, this, &MainWidget::connected);
     connect(socket, &Socket::unconnected, this, &MainWidget::unconnected);
+    connect(socket, &Socket::readyRead, this, &MainWidget::readMessage);
 
     socket->connectToServer();
+}
+
+void MainWidget::addToUserVec()
+{
+    QListWidgetItem *item = new QListWidgetItem(ui->userList);
+    item->setBackgroundColor(Qt::red);
+    item->setText("Nila");
+
+    userVec.push_back(item);
+
+    ui->userList->addItem(item);
 }
 
 void MainWidget::connected()
@@ -56,4 +70,10 @@ void MainWidget::statusChanged(int index)
     else {
         socket->close();
     }
+}
+
+void MainWidget::readMessage()
+{
+    QString message = socket->readAll();
+    qDebug() << message;
 }

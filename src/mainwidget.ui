@@ -41,7 +41,7 @@
     </layout>
    </item>
    <item>
-    <widget class="QListView" name="userList"/>
+    <widget class="QListWidget" name="userList"/>
    </item>
   </layout>
  </widget>
