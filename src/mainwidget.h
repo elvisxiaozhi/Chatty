@@ -23,10 +23,11 @@ private:
 
     Socket *socket;
     QVector<QListWidgetItem *> userVec;
+    QVector<QString> userIDVec;
 
     void setWindowLayout();
     void setSocket();
-    void addToUserVec();
+    void addToUserVec(QString);
 
 private slots:
     void connected();

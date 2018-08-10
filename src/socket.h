@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QTcpSocket>
 #include <QAbstractSocket>
+#include <QDebug>
 
 class Socket : public QTcpSocket
 {

@@ -1,6 +1,5 @@
 #include "socket.h"
 #include <QHostAddress>
-#include <QDebug>
 
 Socket::Socket(QObject *parent) : QTcpSocket(parent)
 {

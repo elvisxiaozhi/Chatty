@@ -9,8 +9,6 @@ MainWidget::MainWidget(QWidget *parent) :
     ui->setupUi(this);
     setWindowLayout();
     setSocket();
-
-    addToUserVec();
 }
 
 MainWidget::~MainWidget()
@@ -41,11 +39,11 @@ void MainWidget::setSocket()
     socket->connectToServer();
 }
 
-void MainWidget::addToUserVec()
+void MainWidget::addToUserVec(QString username)
 {
     QListWidgetItem *item = new QListWidgetItem(ui->userList);
-    item->setBackgroundColor(Qt::red);
-    item->setText("Nila");
+
+    item->setText(username);
 
     userVec.push_back(item);
 
@@ -55,6 +53,8 @@ void MainWidget::addToUserVec()
 void MainWidget::connected()
 {
     ui->statusBox->setCurrentText("Online");
+
+    socket->write("localHostName: " + QHostInfo::localHostName().toUtf8());
 }
 
 void MainWidget::unconnected()
@@ -76,4 +76,14 @@ void MainWidget::readMessage()
 {
     QString message = socket->readAll();
     qDebug() << message;
+
+    if(message.contains(" onlineUser: ")) {
+        QStringList onlineUsers = message.split(" onlineUser: ");
+        for(int i = 0; i < onlineUsers.size(); ++i) {
+            addToUserVec(onlineUsers[i]);
+            userIDVec.push_back(onlineUsers[i + 1]);
+            ++i;
+        }
+        qDebug() << userIDVec;
+    }
 }
