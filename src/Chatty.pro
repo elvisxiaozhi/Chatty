@@ -27,13 +27,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    connection.cpp \
-    mainwidget.cpp
+    mainwidget.cpp \
+    socket.cpp
 
 HEADERS += \
         mainwindow.h \
-    connection.h \
-    mainwidget.h
+    mainwidget.h \
+    socket.h
 
 FORMS += \
         mainwindow.ui \

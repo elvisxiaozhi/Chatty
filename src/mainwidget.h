@@ -2,6 +2,7 @@
 #define MAINWIDGET_H
 
 #include <QWidget>
+#include "socket.h"
 
 namespace Ui {
 class MainWidget;
@@ -18,7 +19,15 @@ public:
 private:
     Ui::MainWidget *ui;
 
+    Socket *socket;
+
     void setWindowLayout();
+    void setSocket();
+
+private slots:
+    void connected();
+    void unconnected();
+    void statusChanged(int);
 };
 
 #endif // MAINWIDGET_H

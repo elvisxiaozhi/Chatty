@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "connection.h"
+#include "socket.h"
 #include <QModelIndex>
 
 namespace Ui {
@@ -19,7 +19,7 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    Connection *connection;
+    Socket *socket;
     QWidget *statusWidget;
     QString localHostName;
     QVector<QString> socketDescriptorVec;

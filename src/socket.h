@@ -1,15 +1,15 @@
-#ifndef CONNECTION_H
-#define CONNECTION_H
+#ifndef SOCKET_H
+#define SOCKET_H
 
 #include <QObject>
 #include <QTcpSocket>
 #include <QAbstractSocket>
 
-class Connection : public QTcpSocket
+class Socket : public QTcpSocket
 {
     Q_OBJECT
 public:
-    explicit Connection(QObject *parent = nullptr);
+    explicit Socket(QObject *parent = nullptr);
     void connectToServer();
 
 signals:
@@ -19,4 +19,4 @@ private slots:
     void getError(QAbstractSocket::SocketError);
 };
 
-#endif // CONNECTION_H
+#endif

@@ -14,15 +14,15 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     setWindowLayout();
 
-    connection = new Connection(this);
+    socket = new Socket(this);
 
-    connect(connection, &Connection::connected, this, &MainWindow::connected);
-    connect(connection, &Connection::unconnected, this, &MainWindow::unconnected);
-    connect(connection, &Connection::readyRead, this, &MainWindow::readMessage);
+    connect(socket, &Socket::connected, this, &MainWindow::connected);
+    connect(socket, &Socket::unconnected, this, &MainWindow::unconnected);
+    connect(socket, &Socket::readyRead, this, &MainWindow::readMessage);
     connect(ui->sendBtn, &QPushButton::clicked, this, &MainWindow::sendMessage);
     connect(ui->userList, &QListWidget::clicked, this, &MainWindow::usernameSelected);
 
-    connection->connectToServer();
+    socket->connectToServer();
 }
 
 MainWindow::~MainWindow()
@@ -63,7 +63,7 @@ void MainWindow::setOfflineStatusBar()
     hLayout->addWidget(btn);
     statusWidget->setLayout(hLayout);
 
-    connect(btn, &QPushButton::clicked, [this](){ connection->connectToServer(); });
+    connect(btn, &QPushButton::clicked, [this](){ socket->connectToServer(); });
 }
 
 void MainWindow::connected()
@@ -71,7 +71,7 @@ void MainWindow::connected()
     statusBar()->removeWidget(statusWidget);
     statusBar()->showMessage(tr("Online"));
 
-    connection->write("localHostName: " + localHostName.toUtf8());
+    socket->write("localHostName: " + localHostName.toUtf8());
 }
 
 void MainWindow::unconnected()
@@ -90,7 +90,7 @@ void MainWindow::sendMessage()
     }
 
     QString message = ui->inputBox->toPlainText();
-    connection->write("messageSendTo: " + socketDescriptorVec[index].toUtf8() + "hereAreMessages: " + message.toUtf8());
+    socket->write("messageSendTo: " + socketDescriptorVec[index].toUtf8() + "hereAreMessages: " + message.toUtf8());
     qDebug() << socketDescriptorVec;
 
     QString currentTime = QTime::currentTime().toString("h:mm:ss AP");
@@ -103,7 +103,7 @@ void MainWindow::sendMessage()
 
 void MainWindow::readMessage()
 {
-    QString message = connection->readAll();
+    QString message = socket->readAll();
 
     if(message.contains(" onlineUser: ")) {
         QStringList onlineUsers = message.split(" onlineUser: ");
