@@ -52,11 +52,10 @@ void Server::readyRead()
         }
     }
     if(message.contains("messageSendTo: ")) {
-        QStringList stringList = QString(message.split("messageSendTo: ").at(1)).split("hereAreMessages: ");
-        qDebug() << stringList << stringList[0].toInt();
+        QStringList stringList = QString(message.split("messageSendTo: ").at(1)).split(" hereAreMessages: ");
         for(int i = 0; i < socketVec.size(); ++i) {
             if(socketVec[i]->socketDescriptor() == stringList[0].toInt()) {
-                socketVec[i]->write(QString(stringList[1]).toUtf8());
+                socketVec[i]->write("messageFrom: " + QString::number(socketSender->socketDescriptor()).toUtf8() + " hereAreMessages: " + QString(stringList[1]).toUtf8());
             }
         }
     }

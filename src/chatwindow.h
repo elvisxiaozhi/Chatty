@@ -12,14 +12,21 @@ class ChatWindow : public QWidget
     Q_OBJECT
 
 public:
-    ChatWindow(QWidget *parent = 0, QString name = "");
+    ChatWindow(QWidget *parent = 0, QString name = "", int ID = 0);
     ~ChatWindow();
 
 private:
     Ui::ChatWindow *ui;
+    int socketID;
 
 protected:
     void closeEvent(QCloseEvent *);
+
+signals:
+    void messageToWrite(QString);
+
+private slots:
+    void sendBtnClicked();
 };
 
 #endif // CHATWINDOW_H

@@ -10,8 +10,6 @@ MainWidget::MainWidget(QWidget *parent) :
     ui->setupUi(this);
     setWindowLayout();
     setSocket();
-
-    addToUserVec("Nila");
 }
 
 MainWidget::~MainWidget()
@@ -101,10 +99,18 @@ void MainWidget::readMessage()
         delete userVec[pos];
         userVec.erase(userVec.begin() + pos);
     }
+    else if(message.contains("messageFrom: ")) {
+        QStringList stringList = message.split("messageFrom: ");
+        qDebug() << stringList[1].split(" hereAreMessages: ")[0] << stringList[1].split(" hereAreMessages: ")[1];
+        int pos = std::find(userIDVec.begin(), userIDVec.end(), stringList[1].split(" hereAreMessages: ")[0]) - userIDVec.begin();
+        userVec[pos]->setTextColor(Qt::red);
+    }
 }
 
 void MainWidget::userListDoubleClicked(QListWidgetItem *item)
 {
-    ChatWindow *chatWindow = new ChatWindow(0, item->text());
+    ChatWindow *chatWindow = new ChatWindow(0, item->text(), userIDVec[ui->userList->currentRow()].toInt());
     chatWindow->show();
+
+    connect(chatWindow, &ChatWindow::messageToWrite, [this](QString message){ socket->write(message.toUtf8()); });
 }
