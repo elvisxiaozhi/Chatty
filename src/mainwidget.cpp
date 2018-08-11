@@ -77,13 +77,13 @@ void MainWidget::readMessage()
     QString message = socket->readAll();
     qDebug() << message;
 
-    if(message.contains(" onlineUser: ")) {
-        QStringList onlineUsers = message.split(" onlineUser: ");
+    if(message.contains(" NextSocket: ")) {
+        QStringList onlineUsers = message.split(" NextSocket: ");
+        onlineUsers.pop_back();
+        onlineUsers.pop_back();
         for(int i = 0; i < onlineUsers.size(); ++i) {
-            addToUserVec(onlineUsers[i]);
-            userIDVec.push_back(onlineUsers[i + 1]);
-            ++i;
+            addToUserVec(onlineUsers[i].split(" ")[0]);
+            userIDVec.push_back(onlineUsers[i].split(" ")[1]);
         }
-        qDebug() << userIDVec;
     }
 }

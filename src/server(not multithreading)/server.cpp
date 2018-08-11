@@ -38,16 +38,12 @@ void Server::readyRead()
     if(message.contains("localHostName: ")) {
         usernameVec.push_back(message.split("localHostName: ").at(1));
 
+        QString message;
         for(int i = 0; i < socketVec.size(); ++i) {
-            QString message;
-            for(int j = 0; j < usernameVec.size(); ++j) {
-                if(j != i) {
-                    message.append(usernameVec[i] + " onlineUser: " + QString::number(socketVec[i]->socketDescriptor()).toUtf8());
-                }
-            }
-            if(message.size() > 0) {
-                socketVec[i]->write(message.toUtf8());
-            }
+            message.append(usernameVec[i] + " " + QString::number(socketVec[i]->socketDescriptor()) + " NextSocket: ");
+        }
+        for(int i = 0; i < socketVec.size(); ++i) {
+            socketVec[i]->write(message.toUtf8());
         }
     }
     if(message.contains("messageSendTo: ")) {
