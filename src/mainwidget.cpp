@@ -80,10 +80,21 @@ void MainWidget::readMessage()
     if(message.contains(" NextSocket: ")) {
         QStringList onlineUsers = message.split(" NextSocket: ");
         onlineUsers.pop_back();
-        onlineUsers.pop_back();
         for(int i = 0; i < onlineUsers.size(); ++i) {
-            addToUserVec(onlineUsers[i].split(" ")[0]);
-            userIDVec.push_back(onlineUsers[i].split(" ")[1]);
+            if(std::find(userIDVec.begin(), userIDVec.end(), onlineUsers[i].split(" ")[1]) != userIDVec.end()) {
+                ;
+            }
+            else {
+                addToUserVec(onlineUsers[i].split(" ")[0]);
+                userIDVec.push_back(onlineUsers[i].split(" ")[1]);
+            }
         }
+    }
+    else if(message.contains("disconnectedSocket: ")) {
+        QString socketID = message.split("disconnectedSocket: ")[1];
+        int pos = std::find(userIDVec.begin(), userIDVec.end(), socketID) - userIDVec.begin();
+        userIDVec.erase(userIDVec.begin() + pos);
+        delete userVec[pos];
+        userVec.erase(userVec.begin() + pos);
     }
 }

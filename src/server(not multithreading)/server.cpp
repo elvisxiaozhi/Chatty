@@ -25,6 +25,9 @@ void Server::clientConnected()
     connect(socket, &QTcpSocket::readyRead, this, &Server::readyRead);
     connect(socket, &QTcpSocket::disconnected, [this, socketDescriptor]() {
         qDebug() << socketDescriptor << "disconnected";
+        for(int i = 0; i < socketVec.size(); ++i) {
+            socketVec[i]->write("disconnectedSocket: " + QString::number(socketDescriptor).toUtf8());
+        }
     });
     connect(socket, &QTcpSocket::disconnected, this, &Server::disconnected);
 }
@@ -38,11 +41,13 @@ void Server::readyRead()
     if(message.contains("localHostName: ")) {
         usernameVec.push_back(message.split("localHostName: ").at(1));
 
-        QString message;
         for(int i = 0; i < socketVec.size(); ++i) {
-            message.append(usernameVec[i] + " " + QString::number(socketVec[i]->socketDescriptor()) + " NextSocket: ");
-        }
-        for(int i = 0; i < socketVec.size(); ++i) {
+            QString message;
+            for(int j = 0; j < usernameVec.size(); ++j) {
+                if(j != i) {
+                    message.append(usernameVec[j] + " " + QString::number(socketVec[j]->socketDescriptor()) + " NextSocket: ");
+                }
+            }
             socketVec[i]->write(message.toUtf8());
         }
     }
