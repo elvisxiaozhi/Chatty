@@ -28,15 +28,18 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     mainwidget.cpp \
-    socket.cpp
+    socket.cpp \
+    chatwindow.cpp
 
 HEADERS += \
         mainwindow.h \
     mainwidget.h \
-    socket.h
+    socket.h \
+    chatwindow.h
 
 FORMS += \
         mainwindow.ui \
-    mainwidget.ui
+    mainwidget.ui \
+    chatwindow.ui
 
 RC_ICONS += icons/chatty.ico

@@ -1,6 +1,7 @@
 #include "mainwidget.h"
 #include "ui_mainwidget.h"
 #include <QHostInfo>
+#include "chatwindow.h"
 
 MainWidget::MainWidget(QWidget *parent) :
     QWidget(parent),
@@ -9,6 +10,8 @@ MainWidget::MainWidget(QWidget *parent) :
     ui->setupUi(this);
     setWindowLayout();
     setSocket();
+
+    addToUserVec("Nila");
 }
 
 MainWidget::~MainWidget()
@@ -26,6 +29,7 @@ void MainWidget::setWindowLayout()
     ui->statusBox->addItem(tr("Offline"));
 
     connect(ui->statusBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWidget::statusChanged);
+    connect(ui->userList, &QListWidget::itemDoubleClicked, this, &MainWidget::userListDoubleClicked);
 }
 
 void MainWidget::setSocket()
@@ -97,4 +101,10 @@ void MainWidget::readMessage()
         delete userVec[pos];
         userVec.erase(userVec.begin() + pos);
     }
+}
+
+void MainWidget::userListDoubleClicked(QListWidgetItem *item)
+{
+    ChatWindow *chatWindow = new ChatWindow(0, item->text());
+    chatWindow->show();
 }

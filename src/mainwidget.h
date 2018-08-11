@@ -34,6 +34,7 @@ private slots:
     void unconnected();
     void statusChanged(int);
     void readMessage();
+    void userListDoubleClicked(QListWidgetItem *);
 };
 
 #endif // MAINWIDGET_H
