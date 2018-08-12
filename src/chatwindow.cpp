@@ -15,6 +15,7 @@ ChatWindow::ChatWindow(QWidget *parent, QString name, int ID) :
     ui->setupUi(this);
     ui->recieverLbl->setText(name);
 
+    setWindowTitle(name);
     show();
 
     connect(ui->sendBtn, &QPushButton::clicked, this, &ChatWindow::sendBtnClicked);
