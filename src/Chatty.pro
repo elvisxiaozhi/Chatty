@@ -6,6 +6,7 @@
 
 QT       += core gui
 QT += network
+QT += multimedia
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -43,3 +44,6 @@ FORMS += \
     chatwindow.ui
 
 RC_ICONS += icons/chatty.ico
+
+RESOURCES += \
+    sounds/sounds.qrc

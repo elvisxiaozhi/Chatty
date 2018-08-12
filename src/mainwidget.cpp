@@ -2,6 +2,7 @@
 #include "ui_mainwidget.h"
 #include <QHostInfo>
 #include "chatwindow.h"
+#include <QSound>
 
 MainWidget::MainWidget(QWidget *parent) :
     QWidget(parent),
@@ -104,6 +105,7 @@ void MainWidget::readMessage()
         qDebug() << stringList[1].split(" hereAreMessages: ")[0] << stringList[1].split(" hereAreMessages: ")[1];
         int pos = std::find(userIDVec.begin(), userIDVec.end(), stringList[1].split(" hereAreMessages: ")[0]) - userIDVec.begin();
         userVec[pos]->setTextColor(Qt::red);
+        QSound::play(":/Sounds/notification.wav");
     }
 }
 

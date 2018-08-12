@@ -2,6 +2,7 @@
 #include "ui_chatwindow.h"
 #include <QCloseEvent>
 #include <QDebug>
+#include <QTime>
 
 ChatWindow::ChatWindow(QWidget *parent, QString name, int ID) :
     QWidget(parent),
@@ -31,4 +32,10 @@ void ChatWindow::sendBtnClicked()
     message.append("messageSendTo: " + QString::number(socketID).toUtf8() + " hereAreMessages: " + ui->inputBox->toPlainText().toUtf8());
     emit messageToWrite(message);
 
+    QString currentTime = QTime::currentTime().toString("h:mm:ss AP");
+    QString msColor = "<font color = \"blue\">";
+    ui->msBox->insertHtml(msColor + currentTime + "<br>");
+    ui->msBox->insertHtml(msColor + ui->inputBox->toPlainText() + "<br>");
+
+    ui->inputBox->clear();
 }
