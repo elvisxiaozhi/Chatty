@@ -106,6 +106,8 @@ void MainWidget::readMessage()
         int pos = std::find(userIDVec.begin(), userIDVec.end(), stringList[1].split(" hereAreMessages: ")[0]) - userIDVec.begin();
         userVec[pos]->setTextColor(Qt::red);
         QSound::play(":/Sounds/notification.wav");
+
+        ChatWindow::checkDataFilePath();
     }
 }
 

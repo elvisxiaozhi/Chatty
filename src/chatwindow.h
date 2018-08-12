@@ -14,6 +14,9 @@ class ChatWindow : public QWidget
 public:
     ChatWindow(QWidget *parent = 0, QString name = "", int ID = 0);
     ~ChatWindow();
+    static QString dataPath;
+
+    static void checkDataFilePath();
 
 private:
     Ui::ChatWindow *ui;

@@ -3,6 +3,10 @@
 #include <QCloseEvent>
 #include <QDebug>
 #include <QTime>
+#include <QDir>
+#include <QStandardPaths>
+
+QString ChatWindow::dataPath = "";
 
 ChatWindow::ChatWindow(QWidget *parent, QString name, int ID) :
     QWidget(parent),
@@ -17,6 +21,15 @@ ChatWindow::ChatWindow(QWidget *parent, QString name, int ID) :
 ChatWindow::~ChatWindow()
 {
     delete ui;
+}
+
+void ChatWindow::checkDataFilePath()
+{
+    QStringList homePath = QStandardPaths::standardLocations(QStandardPaths::HomeLocation);
+    dataPath = homePath.first() + "/AppData/Local/Chatty";
+    if(!QDir().exists(dataPath)) {
+        QDir().mkdir(dataPath);
+    }
 }
 
 void ChatWindow::closeEvent(QCloseEvent *event)
@@ -36,6 +49,8 @@ void ChatWindow::sendBtnClicked()
     QString msColor = "<font color = \"blue\">";
     ui->msBox->insertHtml(msColor + currentTime + "<br>");
     ui->msBox->insertHtml(msColor + ui->inputBox->toPlainText() + "<br>");
+
+    checkDataFilePath();
 
     ui->inputBox->clear();
 }
