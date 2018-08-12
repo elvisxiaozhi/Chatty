@@ -58,6 +58,44 @@ void MainWidget::addToUserVec(QString username)
     ui->userList->addItem(item);
 }
 
+void MainWidget::recieveSocket(QString message)
+{
+    QStringList onlineUsers = message.split(" NextSocket: ");
+    onlineUsers.pop_back();
+    for(int i = 0; i < onlineUsers.size(); ++i) {
+        if(std::find(userIDVec.begin(), userIDVec.end(), onlineUsers[i].split(" ")[1]) != userIDVec.end()) {
+            ;
+        }
+        else {
+            addToUserVec(onlineUsers[i].split(" ")[0]);
+            userIDVec.push_back(onlineUsers[i].split(" ")[1]);
+        }
+    }
+}
+
+void MainWidget::socketDisconnected(QString message)
+{
+    QString socketID = message.split("disconnectedSocket: ")[1];
+    int pos = std::find(userIDVec.begin(), userIDVec.end(), socketID) - userIDVec.begin();
+    userIDVec.erase(userIDVec.begin() + pos);
+    delete userVec[pos];
+    userVec.erase(userVec.begin() + pos);
+}
+
+void MainWidget::recieveMessage(QString message)
+{
+    QStringList stringList = message.split("messageFrom: ");
+    int pos = std::find(userIDVec.begin(), userIDVec.end(), stringList[1].split(" hereAreMessages: ")[0]) - userIDVec.begin();
+    userVec[pos]->setTextColor(Qt::red);
+
+    QSound::play(":/Sounds/notification.wav");
+
+    QString currentTime = QTime::currentTime().toString("h:mm:ss AP");
+    QString msColor = "<font color = \"green\">";
+
+    ChatWindow::saveChatHistory(userIDVec[pos], msColor + currentTime + "<br>", msColor + stringList[1].split(" hereAreMessages: ")[1] + "<br>");
+}
+
 void MainWidget::connected()
 {
     ui->statusBox->setCurrentText("Online");
@@ -86,37 +124,13 @@ void MainWidget::readMessage()
     qDebug() << message;
 
     if(message.contains(" NextSocket: ")) {
-        QStringList onlineUsers = message.split(" NextSocket: ");
-        onlineUsers.pop_back();
-        for(int i = 0; i < onlineUsers.size(); ++i) {
-            if(std::find(userIDVec.begin(), userIDVec.end(), onlineUsers[i].split(" ")[1]) != userIDVec.end()) {
-                ;
-            }
-            else {
-                addToUserVec(onlineUsers[i].split(" ")[0]);
-                userIDVec.push_back(onlineUsers[i].split(" ")[1]);
-            }
-        }
+        recieveSocket(message);
     }
     else if(message.contains("disconnectedSocket: ")) {
-        QString socketID = message.split("disconnectedSocket: ")[1];
-        int pos = std::find(userIDVec.begin(), userIDVec.end(), socketID) - userIDVec.begin();
-        userIDVec.erase(userIDVec.begin() + pos);
-        delete userVec[pos];
-        userVec.erase(userVec.begin() + pos);
+        socketDisconnected(message);
     }
     else if(message.contains("messageFrom: ")) {
-        QStringList stringList = message.split("messageFrom: ");
-        qDebug() << stringList[1].split(" hereAreMessages: ")[0] << stringList[1].split(" hereAreMessages: ")[1];
-        int pos = std::find(userIDVec.begin(), userIDVec.end(), stringList[1].split(" hereAreMessages: ")[0]) - userIDVec.begin();
-        userVec[pos]->setTextColor(Qt::red);
-
-        QSound::play(":/Sounds/notification.wav");
-
-        QString currentTime = QTime::currentTime().toString("h:mm:ss AP");
-        QString msColor = "<font color = \"green\">";
-
-        ChatWindow::saveChatHistory(userIDVec[pos], msColor + currentTime + "<br>", msColor + stringList[1].split(" hereAreMessages: ")[1] + "<br>");
+        recieveMessage(message);
     }
 }
 

@@ -9,6 +9,7 @@ class MainWidget;
 }
 
 class QListWidgetItem;
+class ChatWindow;
 
 class MainWidget : public QWidget
 {
@@ -24,10 +25,14 @@ private:
     Socket *socket;
     QVector<QListWidgetItem *> userVec;
     QVector<QString> userIDVec;
+    QVector<ChatWindow *> chatWindowVec;
 
     void setWindowLayout();
     void setSocket();
     void addToUserVec(QString);
+    void recieveSocket(QString);
+    void socketDisconnected(QString);
+    void recieveMessage(QString);
 
 private slots:
     void connected();
