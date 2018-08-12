@@ -17,6 +17,7 @@ public:
     static QString dataPath;
 
     static void checkDataFilePath();
+    static void saveChatHistory(QString, QString, QString);
 
 private:
     Ui::ChatWindow *ui;

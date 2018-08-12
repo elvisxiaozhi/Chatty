@@ -3,6 +3,8 @@
 #include <QHostInfo>
 #include "chatwindow.h"
 #include <QSound>
+#include <QTime>
+#include <QDir>
 
 MainWidget::MainWidget(QWidget *parent) :
     QWidget(parent),
@@ -15,6 +17,9 @@ MainWidget::MainWidget(QWidget *parent) :
 
 MainWidget::~MainWidget()
 {
+    //remove chat history when app is closed;
+    QDir dir(ChatWindow::dataPath);
+    dir.removeRecursively();
     delete ui;
 }
 
@@ -105,9 +110,13 @@ void MainWidget::readMessage()
         qDebug() << stringList[1].split(" hereAreMessages: ")[0] << stringList[1].split(" hereAreMessages: ")[1];
         int pos = std::find(userIDVec.begin(), userIDVec.end(), stringList[1].split(" hereAreMessages: ")[0]) - userIDVec.begin();
         userVec[pos]->setTextColor(Qt::red);
+
         QSound::play(":/Sounds/notification.wav");
 
-        ChatWindow::checkDataFilePath();
+        QString currentTime = QTime::currentTime().toString("h:mm:ss AP");
+        QString msColor = "<font color = \"green\">";
+
+        ChatWindow::saveChatHistory(userIDVec[pos], msColor + currentTime + "<br>", msColor + stringList[1].split(" hereAreMessages: ")[1] + "<br>");
     }
 }
 

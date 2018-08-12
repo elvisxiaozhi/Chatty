@@ -32,6 +32,20 @@ void ChatWindow::checkDataFilePath()
     }
 }
 
+void ChatWindow::saveChatHistory(QString fileName, QString time, QString history)
+{
+    checkDataFilePath();
+
+    QString chatFile = dataPath + QString("/%1.txt").arg(fileName);
+    QFile file(chatFile);
+    if (file.open(QFile::Append | QFile::Text)) {
+        QTextStream stream(&file);
+        stream << time << endl;
+        stream << history << endl;
+        file.close();
+    }
+}
+
 void ChatWindow::closeEvent(QCloseEvent *event)
 {
     if(event->type() == QEvent::Close) {
@@ -50,7 +64,7 @@ void ChatWindow::sendBtnClicked()
     ui->msBox->insertHtml(msColor + currentTime + "<br>");
     ui->msBox->insertHtml(msColor + ui->inputBox->toPlainText() + "<br>");
 
-    checkDataFilePath();
+    saveChatHistory(QString::number(socketID), msColor + currentTime + "<br>", msColor + ui->inputBox->toPlainText() + "<br>");
 
     ui->inputBox->clear();
 }
