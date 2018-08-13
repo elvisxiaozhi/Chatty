@@ -34,6 +34,8 @@ private:
     void socketDisconnected(QString);
     void recieveMessage(QString);
     void createChatWindow(QListWidgetItem *);
+    bool hasChatWindow(int);
+    int returnChatWindowIndex(int);
 
 private slots:
     void connected();

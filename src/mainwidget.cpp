@@ -113,6 +113,27 @@ void MainWidget::createChatWindow(QListWidgetItem *item)
     });
 }
 
+bool MainWidget::hasChatWindow(int id)
+{
+    for(int i =  0; i < chatWindowVec.size(); ++i) {
+        if(id == chatWindowVec[i]->socketID) {
+            return true;
+        }
+    }
+    return false;
+}
+
+//use this function only when hasChatWindow return true;
+int MainWidget::returnChatWindowIndex(int id)
+{
+    for(int i =  0; i < chatWindowVec.size(); ++i) {
+        if(id == chatWindowVec[i]->socketID) {
+            return i;
+        }
+    }
+    return 0;
+}
+
 void MainWidget::connected()
 {
     ui->statusBox->setCurrentText("Online");
@@ -153,15 +174,8 @@ void MainWidget::readMessage()
 
 void MainWidget::userListDoubleClicked(QListWidgetItem *item)
 {
-    if(chatWindowVec.size() != 0) {
-        for(int i =  0; i < chatWindowVec.size(); ++i) {
-            if(userIDVec[ui->userList->currentRow()].toInt() == chatWindowVec[i]->socketID) {
-                chatWindowVec[i]->showNormal();
-            }
-            else if(i == chatWindowVec.size() - 1) {
-                createChatWindow(item);
-            }
-        }
+    if(hasChatWindow(userIDVec[ui->userList->currentRow()].toInt())) {
+        chatWindowVec[returnChatWindowIndex(userIDVec[ui->userList->currentRow()].toInt())]->showNormal();
     }
     else {
         createChatWindow(item);
