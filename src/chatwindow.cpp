@@ -35,11 +35,11 @@ void ChatWindow::checkDataFilePath()
     }
 }
 
-void ChatWindow::saveChatHistory(QString fileName, QString time, QString history)
+void ChatWindow::saveChatHistory(QString filename, QString time, QString history)
 {
     checkDataFilePath();
 
-    QString chatFile = dataPath + QString("/%1.txt").arg(fileName);
+    QString chatFile = dataPath + QString("/%1.txt").arg(filename);
     QFile file(chatFile);
     if (file.open(QFile::Append | QFile::Text)) {
         QTextStream stream(&file);
@@ -53,6 +53,22 @@ void ChatWindow::recieveMessage(QString time, QString message)
 {
     ui->msBox->insertHtml(time);
     ui->msBox->insertHtml(message);
+}
+
+void ChatWindow::readChatHistory(QString filename)
+{
+    checkDataFilePath();
+
+    QString chatFile = dataPath + QString("/%1.txt").arg(filename);
+    QFile file(chatFile);
+    if(file.open(QIODevice::ReadOnly)) {
+       QTextStream in(&file);
+       while(!in.atEnd()) {
+          QString line = in.readLine();
+          ui->msBox->insertHtml(line);
+       }
+       file.close();
+    }
 }
 
 void ChatWindow::closeEvent(QCloseEvent *event)

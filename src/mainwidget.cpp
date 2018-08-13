@@ -104,6 +104,7 @@ void MainWidget::recieveMessage(QString message)
 void MainWidget::createChatWindow(QListWidgetItem *item)
 {
     ChatWindow *chatWindow = new ChatWindow(0, item->text(), userIDVec[ui->userList->currentRow()].toInt());
+    chatWindow->readChatHistory(userIDVec[ui->userList->currentRow()]);
 
     chatWindowVec.push_back(chatWindow);
 
@@ -168,6 +169,8 @@ void MainWidget::readMessage()
 
 void MainWidget::userListDoubleClicked(QListWidgetItem *item)
 {
+    item->setTextColor(QColor()); //set text color to the default color
+
     if(hasChatWindow(userIDVec[ui->userList->currentRow()].toInt())) {
         for(int i =  0; i < chatWindowVec.size(); ++i) {
             if(userIDVec[ui->userList->currentRow()].toInt() == chatWindowVec[i]->socketID) {
