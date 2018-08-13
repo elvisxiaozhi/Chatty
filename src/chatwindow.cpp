@@ -49,6 +49,12 @@ void ChatWindow::saveChatHistory(QString fileName, QString time, QString history
     }
 }
 
+void ChatWindow::recieveMessage(QString time, QString message)
+{
+    ui->msBox->insertHtml(time);
+    ui->msBox->insertHtml(message);
+}
+
 void ChatWindow::closeEvent(QCloseEvent *event)
 {
     if(event->type() == QEvent::Close) {

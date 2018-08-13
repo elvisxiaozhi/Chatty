@@ -93,7 +93,12 @@ void MainWidget::recieveMessage(QString message)
     QString currentTime = QTime::currentTime().toString("h:mm:ss AP");
     QString msColor = "<font color = \"green\">";
 
-    ChatWindow::saveChatHistory(userIDVec[pos], msColor + currentTime + "<br>", msColor + stringList[1].split(" hereAreMessages: ")[1] + "<br>");
+    if(hasChatWindow(userIDVec[pos].toInt())) {
+        chatWindowVec[pos]->recieveMessage(msColor + currentTime + "<br>", msColor + stringList[1].split(" hereAreMessages: ")[1] + "<br>");
+    }
+    else {
+        ChatWindow::saveChatHistory(userIDVec[pos], msColor + currentTime + "<br>", msColor + stringList[1].split(" hereAreMessages: ")[1] + "<br>");
+    }
 }
 
 void MainWidget::createChatWindow(QListWidgetItem *item)
@@ -121,17 +126,6 @@ bool MainWidget::hasChatWindow(int id)
         }
     }
     return false;
-}
-
-//use this function only when hasChatWindow return true;
-int MainWidget::returnChatWindowIndex(int id)
-{
-    for(int i =  0; i < chatWindowVec.size(); ++i) {
-        if(id == chatWindowVec[i]->socketID) {
-            return i;
-        }
-    }
-    return 0;
 }
 
 void MainWidget::connected()
@@ -175,7 +169,11 @@ void MainWidget::readMessage()
 void MainWidget::userListDoubleClicked(QListWidgetItem *item)
 {
     if(hasChatWindow(userIDVec[ui->userList->currentRow()].toInt())) {
-        chatWindowVec[returnChatWindowIndex(userIDVec[ui->userList->currentRow()].toInt())]->showNormal();
+        for(int i =  0; i < chatWindowVec.size(); ++i) {
+            if(userIDVec[ui->userList->currentRow()].toInt() == chatWindowVec[i]->socketID) {
+                chatWindowVec[i]->showNormal();
+            }
+        }
     }
     else {
         createChatWindow(item);
