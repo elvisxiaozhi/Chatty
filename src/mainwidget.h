@@ -33,6 +33,7 @@ private:
     void recieveSocket(QString);
     void socketDisconnected(QString);
     void recieveMessage(QString);
+    void createChatWindow(QListWidgetItem *);
 
 private slots:
     void connected();

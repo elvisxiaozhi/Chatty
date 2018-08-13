@@ -96,6 +96,23 @@ void MainWidget::recieveMessage(QString message)
     ChatWindow::saveChatHistory(userIDVec[pos], msColor + currentTime + "<br>", msColor + stringList[1].split(" hereAreMessages: ")[1] + "<br>");
 }
 
+void MainWidget::createChatWindow(QListWidgetItem *item)
+{
+    ChatWindow *chatWindow = new ChatWindow(0, item->text(), userIDVec[ui->userList->currentRow()].toInt());
+
+    chatWindowVec.push_back(chatWindow);
+
+    connect(chatWindow, &ChatWindow::messageToWrite, [this](QString message){ socket->write(message.toUtf8()); });
+    connect(chatWindow, &ChatWindow::closingWindow, [&](int socketID){
+        for(int i = 0; i < chatWindowVec.size(); ++i) {
+            if(chatWindowVec[i]->socketID == socketID) {
+                chatWindowVec[i]->deleteLater();
+                chatWindowVec.erase(chatWindowVec.begin() + i);
+            }
+        }
+    });
+}
+
 void MainWidget::connected()
 {
     ui->statusBox->setCurrentText("Online");
@@ -136,17 +153,17 @@ void MainWidget::readMessage()
 
 void MainWidget::userListDoubleClicked(QListWidgetItem *item)
 {
-    ChatWindow *chatWindow = new ChatWindow(0, item->text(), userIDVec[ui->userList->currentRow()].toInt());
-
-    chatWindowVec.push_back(chatWindow);
-
-    connect(chatWindow, &ChatWindow::messageToWrite, [this](QString message){ socket->write(message.toUtf8()); });
-    connect(chatWindow, &ChatWindow::closingWindow, [&](int socketID){
-        for(int i = 0; i < chatWindowVec.size(); ++i) {
-            if(chatWindowVec[i]->socketID == socketID) {
-                chatWindowVec[i]->deleteLater();
-                chatWindowVec.erase(chatWindowVec.begin() + i);
+    if(chatWindowVec.size() != 0) {
+        for(int i =  0; i < chatWindowVec.size(); ++i) {
+            if(userIDVec[ui->userList->currentRow()].toInt() == chatWindowVec[i]->socketID) {
+                chatWindowVec[i]->showNormal();
+            }
+            else if(i == chatWindowVec.size() - 1) {
+                createChatWindow(item);
             }
         }
-    });
+    }
+    else {
+        createChatWindow(item);
+    }
 }
