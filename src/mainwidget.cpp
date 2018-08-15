@@ -154,7 +154,6 @@ void MainWidget::statusChanged(int index)
 void MainWidget::readMessage()
 {
     QString message = socket->readAll();
-    qDebug() << message;
 
     if(message.contains(" NextSocket: ")) {
         recieveSocket(message);
