@@ -9,7 +9,7 @@ Socket::Socket(QObject *parent) : QTcpSocket(parent)
 void Socket::connectToServer()
 {
     abort();
-    connectToHost(QHostAddress::LocalHost, 6666);
+    connectToHost(QHostAddress("34.80.123.141"), 6666);
     if(!waitForConnected()) {
         qDebug() << "Failed to connect";
     }
