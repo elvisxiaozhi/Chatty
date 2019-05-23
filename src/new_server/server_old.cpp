@@ -1,18 +1,29 @@
-#include "server.h"
 #include <iostream>
 #include <cstring>
 #include <unistd.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <pthread.h>
 
 using std::cout;
 using std::endl;
 
-int Server::countClient = 0;
-int *Server::socksClient;
-pthread_mutex_t Server::mutex;
+#define BUFF_SIZE 100
+#define CLIENT_MAX 256
 
-Server::Server()
+void *clientHandler(void *arg);
+void sendMsg(char *msg, int len);
+
+int countClient = 0;
+int socksClient[CLIENT_MAX];
+pthread_mutex_t mutex;
+
+int main()
 {
-    socksClient = new int[MAX_CLIENT];
+    int serverSocket, clientSocket;
+
+    struct sockaddr_in serverAddr, clientAddr;
+    socklen_t clientAddrSize;
 
     cout << "What's the port: " << endl;
     std::string port;
@@ -42,7 +53,7 @@ Server::Server()
         socksClient[countClient++] = clientSocket;//Lock 访问公共代码区
         pthread_mutex_unlock(&mutex);
 
-        pthread_create(&pthreadID, nullptr, &Server::clientHandler, (void *)&clientSocket);
+        pthread_create(&pthreadID, NULL, clientHandler, (void *)&clientSocket);
         pthread_detach(pthreadID);//销毁线程
 
         cout << "Client IP: " << inet_ntoa(clientAddr.sin_addr) << endl;
@@ -50,14 +61,11 @@ Server::Server()
 
     close(serverSocket);
     pthread_mutex_destroy(&mutex);
+
+    return 0;
 }
 
-Server::~Server()
-{
-    delete[] socksClient;
-}
-
-void *Server::clientHandler(void *arg)
+void *clientHandler(void *arg)
 {
     int clientSocket = *((int *)arg);
     int strLen = 0, i;
@@ -82,8 +90,7 @@ void *Server::clientHandler(void *arg)
 
     return nullptr;
 }
-
-void Server::sendMsg(char *msg, int len)
+void sendMsg(char *msg, int len)//send message to all clients
 {
     int i;
     pthread_mutex_lock(&mutex);
