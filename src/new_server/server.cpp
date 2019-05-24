@@ -6,15 +6,12 @@
 using std::cout;
 using std::endl;
 
-int Server::countClient = 0;
-int *Server::socksClient;
+vector<int> Server::clients;
 pthread_mutex_t Server::mutex;
 
 Server::Server()
 {
-    socksClient = new int[MAX_CLIENT];
-
-    cout << "What's the port: " << endl;
+    cout << "What's the port: ";
     std::string port;
     std::getline(std::cin, port);
 
@@ -39,7 +36,7 @@ Server::Server()
         clientSocket = accept(serverSocket, (struct sockaddr*)&clientAddr, &clientAddrSize);
 
         pthread_mutex_lock(&mutex);
-        socksClient[countClient++] = clientSocket;//Lock 访问公共代码区
+        clients.push_back(clientSocket);
         pthread_mutex_unlock(&mutex);
 
         pthread_create(&pthreadID, nullptr, &Server::clientHandler, (void *)&clientSocket);
@@ -52,31 +49,27 @@ Server::Server()
     pthread_mutex_destroy(&mutex);
 }
 
-Server::~Server()
-{
-    delete[] socksClient;
-}
-
 void *Server::clientHandler(void *arg)
 {
     int clientSocket = *((int *)arg);
-    int strLen = 0, i;
+    int strLen = 0;
     char msg[BUFF_SIZE];
 
     while ((strLen = read(clientSocket, msg, sizeof(msg))) != 0) {
         sendMsg(msg, strLen);
     }
 
+    //when read == 0, client disconnected;
+    //remove disconnencted client
     pthread_mutex_lock(&mutex);
-    for (i = 0; i < countClient; ++i){//remove disconnencted client
-        if (clientSocket == socksClient[i]) {
-            while (i++ <= countClient - 1) {
-                socksClient[i] = socksClient[i + 1];
-            }
-            break;
+    int i, n = clients.size();
+    for (i = 0; i < n; ++i){
+        if (clientSocket == clients[i]) {
+            clients.erase(clients.begin() + i);
+            cout << "Client disconnected" << endl;
         }
+        break;
     }
-    countClient--;
     pthread_mutex_unlock(&mutex);
     close(clientSocket);
 
@@ -85,10 +78,10 @@ void *Server::clientHandler(void *arg)
 
 void Server::sendMsg(char *msg, int len)
 {
-    int i;
     pthread_mutex_lock(&mutex);
-    for (i = 0; i < countClient; ++i){
-        write(socksClient[i], msg, len);
+    int i, n = clients.size();
+    for (i = 0; i < n; ++i){
+        write(clients[i], msg, len);
     }
     pthread_mutex_unlock(&mutex);
 }

@@ -4,18 +4,19 @@
 #include <pthread.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <vector>
+
+using std::vector;
 
 class Server
 {
 public:
     Server();
-    ~Server();
 
 private:
     static const int BUFF_SIZE = 100;
-    const int MAX_CLIENT = 255;
-    static int countClient;
     static int *socksClient;
+    static vector<int> clients;
     static pthread_mutex_t mutex;
     int serverSocket, clientSocket;
     struct sockaddr_in serverAddr, clientAddr;
