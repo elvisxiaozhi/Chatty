@@ -26,10 +26,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        widget.cpp
+        widget.cpp \
+    customtextedit.cpp
 
 HEADERS += \
-        widget.h
+        widget.h \
+    customtextedit.h
 
 FORMS += \
         widget.ui

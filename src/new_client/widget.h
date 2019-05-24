@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QTcpSocket>
+#include "customtextedit.h"
 
 namespace Ui {
 class Widget;
@@ -16,12 +17,15 @@ public:
     explicit Widget(QWidget *parent = 0);
     ~Widget();
 
-private slots:
-    void on_sendButton_clicked();
-
 private:
     Ui::Widget *ui;
     QTcpSocket *socket;
+    CustomTextEdit *inputEdit;
+
+    void createInputEdit();
+
+private slots:
+    void on_sendButton_clicked();
 };
 
 #endif // WIDGET_H
