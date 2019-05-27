@@ -9,30 +9,14 @@ Widget::Widget(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    generateID();
-    ui->textEdit->setText(userID);
-
-    socket = new QTcpSocket(this);
-
-//    socket->connectToHost(QHostAddress("34.80.123.141"), 6666);
-    socket->connectToHost(QHostAddress("192.168.56.101"), 6666);
-
-    if (!socket->waitForConnected()) {
-        qDebug() << "Failed to connect";
-    }
-    else {
-        qDebug() << "Connected to server";
-    }
-    generateID();
-
+    userID = generateID();
     createInputEdit();
-
-    connect(socket, &QTcpSocket::readyRead, [this](){ qDebug() << socket->readAll();
-        qDebug() << socket->socketDescriptor(); });
+    createSocket();
 }
 
 Widget::~Widget()
 {
+    socket->close();
     delete ui;
 }
 
@@ -47,7 +31,7 @@ void Widget::createInputEdit()
     connect(btnShortcut, &QShortcut::activated, [this](){ qDebug() << "Key"; });
 }
 
-void Widget::generateID()
+QString Widget::generateID()
 {
     QString id = QString::number(rand() % UINT_MAX);
     int i, n = QString::number(UINT_MAX).size() - id.size();
@@ -55,7 +39,23 @@ void Widget::generateID()
         id.push_front("0");
     }
 
-    userID = id;
+    return id;
+}
+
+void Widget::createSocket()
+{
+    socket = new QTcpSocket(this);
+
+//    socket->connectToHost(QHostAddress("34.80.123.141"), 6666);
+    socket->connectToHost(QHostAddress("192.168.56.101"), 6665);
+    if (!socket->waitForConnected()) {
+        qDebug() << "Failed to connect";
+    }
+    else {
+        sendUserInfo();
+    }
+
+    connect(socket, &QTcpSocket::readyRead, [this](){ qDebug() << socket->readAll(); });
 }
 
 void Widget::on_sendButton_clicked()
@@ -63,4 +63,10 @@ void Widget::on_sendButton_clicked()
     QString msg = inputEdit->toPlainText() + "\n";
     socket->write(msg.toUtf8());
     inputEdit->clear();
+}
+
+void Widget::sendUserInfo()
+{
+    QString msg = SEND_USER_INFO + userID;
+    socket->write(msg.toUtf8());
 }
