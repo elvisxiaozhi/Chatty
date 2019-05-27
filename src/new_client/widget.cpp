@@ -9,10 +9,13 @@ Widget::Widget(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    generateID();
+    ui->textEdit->setText(userID);
+
     socket = new QTcpSocket(this);
 
-    socket->connectToHost(QHostAddress("34.80.123.141"), 6666);
-//    socket->connectToHost(QHostAddress::LocalHost, 6666);
+//    socket->connectToHost(QHostAddress("34.80.123.141"), 6666);
+    socket->connectToHost(QHostAddress("192.168.56.101"), 6666);
 
     if (!socket->waitForConnected()) {
         qDebug() << "Failed to connect";
@@ -20,10 +23,12 @@ Widget::Widget(QWidget *parent) :
     else {
         qDebug() << "Connected to server";
     }
+    generateID();
 
     createInputEdit();
 
-    connect(socket, &QTcpSocket::readyRead, [this](){ qDebug() << socket->readAll(); });
+    connect(socket, &QTcpSocket::readyRead, [this](){ qDebug() << socket->readAll();
+        qDebug() << socket->socketDescriptor(); });
 }
 
 Widget::~Widget()
@@ -39,7 +44,18 @@ void Widget::createInputEdit()
     connect(inputEdit, &CustomTextEdit::returnPressed, this, &Widget::on_sendButton_clicked);
 
     QShortcut *btnShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Return), this);
-    connect(btnShortcut, &QShortcut::activated, [this](){ /*inputEdit->rep; */qDebug() << "Key"; });
+    connect(btnShortcut, &QShortcut::activated, [this](){ qDebug() << "Key"; });
+}
+
+void Widget::generateID()
+{
+    QString id = QString::number(rand() % UINT_MAX);
+    int i, n = QString::number(UINT_MAX).size() - id.size();
+    for (i = 0; i < n; ++i) {
+        id.push_front("0");
+    }
+
+    userID = id;
 }
 
 void Widget::on_sendButton_clicked()

@@ -31,6 +31,7 @@ Server::Server()
     }
 
     pthread_t pthreadID;
+
     while (true) {
         clientAddrSize = sizeof(clientAddr);
         clientSocket = accept(serverSocket, (struct sockaddr*)&clientAddr, &clientAddrSize);
@@ -42,7 +43,7 @@ Server::Server()
         pthread_create(&pthreadID, nullptr, &Server::clientHandler, (void *)&clientSocket);
         pthread_detach(pthreadID);//销毁线程
 
-        cout << "Client IP: " << inet_ntoa(clientAddr.sin_addr) << endl;
+        cout << "Client IP: " << inet_ntoa(clientAddr.sin_addr) << "\tPort: " << ntohs(clientAddr.sin_port) << endl;
     }
 
     close(serverSocket);

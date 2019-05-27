@@ -20,9 +20,11 @@ public:
 private:
     Ui::Widget *ui;
     QTcpSocket *socket;
+    QString userID;
     CustomTextEdit *inputEdit;
 
     void createInputEdit();
+    void generateID();
 
 private slots:
     void on_sendButton_clicked();
