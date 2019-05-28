@@ -23,11 +23,15 @@ private:
     QString userID;
     CustomTextEdit *inputEdit;
 
+    const QString SEND_USER_INFO = "01";
+
     void createInputEdit();
-    void generateID();
+    QString generateID();
+    void createSocket();
 
 private slots:
     void on_sendButton_clicked();
+    void sendUserInfo();
 };
 
 #endif // WIDGET_H
