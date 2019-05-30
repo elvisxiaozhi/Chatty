@@ -1,14 +1,15 @@
 #include "server.h"
 #include <iostream>
 #include <unistd.h>
-#include <cstring>
 
 using std::cout;
 using std::endl;
 
-map<string, int> Server::clientInfo;
+map<string, int> Server::clientSocketInfo;
+map<string, string> Server::userInfo;
 pthread_mutex_t Server::mutex;
 int Server::serverSocket;
+const string Server::SEND_USERS_INFO = "02";
 
 Server::Server()
 {
@@ -21,7 +22,7 @@ Server::Server()
     memset(&serverAddr, 0, sizeof(serverAddr));
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    serverAddr.sin_port = htons(/*atoi(port.c_str())*/6665);
+    serverAddr.sin_port = htons(/*atoi(port.c_str())*/6666);
 
     if (bind(serverSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) == -1) {
         cout << "Bind error." << endl;
@@ -50,10 +51,16 @@ Server::Server()
 void *Server::clientHandler(void *arg)
 {
     int socket = *((int *)arg);
-    string userID = bindUserInfoToSocket(socket); //userID is needed later when clientSocket disconnected from server
+    char msg[BUFF_SIZE];
+    read(socket, msg, sizeof(msg));
+
+    string userID = bindUserIDToSocket(socket, msg); //userID is needed later when clientSocket disconnected from server
+    setUserInfo(userID, msg);
+
+    sendUserInfoToClients();
+    memset(msg, 0, sizeof(msg));
 
     int strLen = 0;
-    char msg[BUFF_SIZE];
     while ((strLen = read(socket, msg, sizeof(msg))) != 0) {
         sendMsg(msg, strLen);
 
@@ -65,10 +72,12 @@ void *Server::clientHandler(void *arg)
 
     //when read == 0, client disconnected; then remove disconnencted client
     pthread_mutex_lock(&mutex);
-    map<string ,int>::iterator it;
-    it = clientInfo.find(userID);
-    clientInfo.erase(it);
-    cout << "Client disconnected" << "\t" << clientInfo.size() << endl;
+    map<string ,int>::iterator clntIt = clientSocketInfo.find(userID);
+    clientSocketInfo.erase(clntIt);
+
+    map<string, string>::iterator usrIt = userInfo.find(userID);
+    userInfo.erase(usrIt);
+    cout << "Client disconnected" << "\t" << clientSocketInfo.size() << endl;
     pthread_mutex_unlock(&mutex);
 
     close(socket);
@@ -76,26 +85,57 @@ void *Server::clientHandler(void *arg)
     return nullptr;
 }
 
-string Server::bindUserInfoToSocket(const int socket)
+string Server::bindUserIDToSocket(const int socket, char *msg)
 {
-    char msg[BUFF_SIZE];
-    read(socket, msg, sizeof(msg));
-
     string userID;
-    int i, n = USER_INFO_SIZE + HEADER_SIZE;
+    int i, n = HEADER_SIZE + USER_ID_SIZE;
     for (i = HEADER_SIZE; i < n; ++i) {
         userID.push_back(msg[i]);
     }
+
     pthread_mutex_lock(&mutex);
-    clientInfo.insert(std::make_pair(userID, socket));
+    clientSocketInfo.insert(std::make_pair(userID, socket));
     pthread_mutex_unlock(&mutex);
 
-    for(auto elem : clientInfo)
+    for(auto e : clientSocketInfo)
     {
-       std::cout << elem.first << " " << elem.second << endl;
+       cout << e.first << " " << e.second << endl;
     }
 
     return userID;
+}
+
+void Server::setUserInfo(const std::string id, char *msg)
+{
+    string username;
+    int i, n = HEADER_SIZE + USER_ID_SIZE + USERNAME_SIZE;
+    for (i = HEADER_SIZE + USER_ID_SIZE; i < n; ++i) {
+        username.push_back(msg[i]);
+    }
+
+    pthread_mutex_lock(&mutex);
+    userInfo.insert(std::make_pair(id, username));
+    pthread_mutex_unlock(&mutex);
+
+    for(auto e : userInfo)
+    {
+       cout << e.first << " " << e.second << endl;
+    }
+}
+
+void Server::sendUserInfoToClients()
+{
+    string msgStr = SEND_USERS_INFO;
+    for (auto e : userInfo) {
+        msgStr.append(e.first + e.second); //don't know why push back is not working
+    }
+
+    int len = msgStr.length();
+    char msg[len];
+    strcpy(msg, msgStr.c_str());
+    for (auto e : clientSocketInfo) {
+        write(e.second, msg, len);
+    }
 }
 
 string Server::decipherMessage(char *msg)
@@ -123,7 +163,7 @@ void Server::messageType(const std::string)
 void Server::sendMsg(char *msg, int len)
 {
     pthread_mutex_lock(&mutex);
-    for (auto e : clientInfo) {
+    for (auto e : clientSocketInfo) {
         write(e.second, msg, len);
     }
     pthread_mutex_unlock(&mutex);
