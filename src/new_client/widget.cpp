@@ -12,6 +12,8 @@ Widget::Widget(QWidget *parent) :
     userID = generateID();
     createInputEdit();
     createSocket();
+
+    connect(ui->friendsList, &QListWidget::itemDoubleClicked, this, &Widget::friendsListDoubleClicked);
 }
 
 Widget::~Widget()
@@ -47,15 +49,33 @@ void Widget::createSocket()
     socket = new QTcpSocket(this);
 
 //    socket->connectToHost(QHostAddress("34.80.123.141"), 6666);
-    socket->connectToHost(QHostAddress("192.168.56.101"), 6665);
+    socket->connectToHost(QHostAddress("192.168.56.101"), 6666);
     if (!socket->waitForConnected()) {
         qDebug() << "Failed to connect";
     }
     else {
-        sendUserInfo();
+        sendUserInfo(); //change this later
     }
 
-    connect(socket, &QTcpSocket::readyRead, [this](){ qDebug() << socket->readAll(); });
+    connect(socket, &QTcpSocket::readyRead, this, &Widget::decipherMessage);
+}
+
+void Widget::setFriendsList(QString msg)
+{
+    QStringList friendsList;
+    int i, n = msg.size() / (USER_ID_SIZE + USERNAME_SIZE);
+    QString id, name;
+    for (i = 0; i < n; ++i) {
+        id = msg.left(USER_ID_SIZE);
+        msg.remove(0, USER_ID_SIZE);
+        name = msg.left(USERNAME_SIZE);
+        msg.remove(0, USERNAME_SIZE);
+
+        friendsInfo.insert(id, name);
+        friendsList.push_back(name);
+    }
+
+    updateFriendsList(friendsList);
 }
 
 void Widget::on_sendButton_clicked()
@@ -65,8 +85,41 @@ void Widget::on_sendButton_clicked()
     inputEdit->clear();
 }
 
-void Widget::sendUserInfo()
+int Widget::sendUserInfo()
 {
-    QString msg = SEND_USER_INFO + userID;
-    socket->write(msg.toUtf8());
+    QString msg = SEND_USER_INFO + userID + username;
+    int i, n = USERNAME_SIZE - username.size();
+    for (i = 0; i < n; ++i) {
+        msg.push_back("*");
+    }
+
+    return socket->write(msg.toUtf8());
+}
+
+void Widget::updateFriendsList(const QStringList friendsList)
+{
+    int i, n = friendsList.size();
+    for (i = 0; i < n; ++i) {
+        QListWidgetItem *item = new QListWidgetItem(ui->friendsList);
+        item->setText(QString(friendsList[i]).remove("*"));
+
+        ui->friendsList->addItem(item);
+    }
+}
+
+void Widget::decipherMessage()
+{
+    QString msg = socket->readAll();
+    qDebug() << msg;
+    QString header = msg.left(HEADER_SIZE);
+    msg = msg.remove(0, HEADER_SIZE);
+
+    if (header == UPDATE_FRIENDS_LIST) {
+        setFriendsList(msg);
+    }
+}
+
+void Widget::friendsListDoubleClicked()
+{
+    qDebug() << "Clicked";
 }
