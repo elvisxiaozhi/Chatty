@@ -6,6 +6,7 @@
 
 QT       += core gui
 QT += network
+CONFIG += c++14 #need to use auto in lambdas
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 

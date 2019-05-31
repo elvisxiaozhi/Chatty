@@ -35,6 +35,7 @@ private:
     QString generateID();
     void createSocket();
     void setFriendsList(QString);
+    QVector<std::pair<QString, QString> > returnSortedFriendsInfo(const QMap<QString, QString>);
 
 private slots:
     void on_sendButton_clicked();

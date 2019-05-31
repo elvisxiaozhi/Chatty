@@ -75,7 +75,23 @@ void Widget::setFriendsList(QString msg)
         friendsList.push_back(name);
     }
 
+    qDebug() << returnSortedFriendsInfo(friendsInfo);
     updateFriendsList(friendsList);
+}
+
+QVector<std::pair<QString, QString> > Widget::returnSortedFriendsInfo(const QMap<QString, QString> info)
+{
+    QVector<std::pair<QString, QString> > res;
+
+    for (auto it : info.toStdMap()) {
+        res.push_back(std::make_pair(it.first, it.second));
+    }
+
+    std::sort(res.begin(), res.end(), [](auto &left, auto &right) {
+        return left.second < right.second;
+    });
+
+    return res;
 }
 
 void Widget::on_sendButton_clicked()
